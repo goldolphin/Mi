@@ -29,4 +29,11 @@ public class Common {
 //        return match(regex, text, newStart, end, lower-1);
 //    }
 //
+    public static void main(String[] args) {
+        Regex regex = new Regex("ab*");
+        regex.dump();
+
+        regex = new Regex("ab*\\0");
+        regex.dump();
+    }
 }

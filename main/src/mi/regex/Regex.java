@@ -8,7 +8,7 @@ import java.util.HashSet;
  * Time: 2013-04-07 21:35
  */
 public class Regex {
-    private static EmptyRegex Empty = new EmptyRegex();
+    private static EndRegex End = new EndRegex();
 
     private static HashSet<Character> ControlCharSet = new HashSet<>();
 
@@ -19,9 +19,22 @@ public class Regex {
         }
     }
 
+    private final String pattern;
+    private final AbstractRegex regex;
     private int groupCount;
-    private String pattern;
     private int n;
+
+    public Regex(String pattern) {
+        this.pattern = pattern;
+        n = 0;
+        groupCount = 0;
+        regex = parseGroup();
+        regex.setNext(End);
+    }
+
+    void dump() {
+        regex.print(0);
+    }
 
     char peek() {
         return pattern.charAt(n);
@@ -39,55 +52,71 @@ public class Regex {
         return n >= pattern.length();
     }
 
-    AbstractRegex parseOr() {
-        AbstractRegex seq = parseSequence();
+    AbstractRegex parseOr(AbstractRegex end) {
+        AbstractRegex seq = parseSequence(end);
+        if (end()) return seq;
         char c = poll();
         switch (c) {
             case '|':
-                return new OrRegex(seq, parseOr());
+                return new OrRegex(seq, parseOr(end));
             default:
                 unpoll();
                 return seq;
         }
     }
 
-    AbstractRegex parseSequence() {
-        AbstractRegex cls;
+    AbstractRegex parseSequence(AbstractRegex end) {
         try {
-            cls = parseClosure();
+            AbstractRegex term = parseTerm();
+            if (term instanceof GroupRegex) {
+                GroupRegex group = (GroupRegex) term;
+                AbstractRegex cls = buildClosure(new RefRegex(group.groupNum()));
+                group.groupEnd().setNext(cls);
+                cls.setNext(parseSequence(end));
+                return group;
+            }
+            AbstractRegex cls = buildClosure((AtomRegex) term);
+            cls.setNext(parseSequence(end));
+            return cls;
         } catch (RegexException e) {
-            return Empty;
+            return end;
         }
-        cls.setNext(parseSequence());
-        return cls;
     }
 
-    AbstractRegex parseClosure() {
-        AbstractRegex term = parseTerm();
+    AbstractRegex buildClosure(AtomRegex atom) {
         char c = poll();
         switch (c) {
             case '*':
+                return new AsteriskRegex(atom);
             case '+':
+                return new PlusRegex(atom);
             case '?':
+                return new QuestionRegex(atom);
+            default:
+                unpoll();
+                return atom;
         }
-        return term;
     }
 
     AbstractRegex parseTerm() {
+        verify(!end(), "Meet end");
         char c = peek();
         switch (c) {
             case '(':
-                return parseGroup();
+                verify(poll() == '(', "need '('");
+                AbstractRegex group = parseGroup();
+                verify(poll() == ')', "need ')'");
+                return group;
             default:
                 return parseAtom();
         }
     }
 
     AbstractRegex parseGroup() {
-        verify(poll() == '(', "need '('");
-        AbstractRegex or = parseOr();
-        verify(poll() == '(', "need '('");
-        return or;
+        GroupRegex group = new GroupRegex(groupCount);
+        group.setNext(parseOr(group.groupEnd()));
+        groupCount ++;
+        return group;
     }
 
     AtomRegex parseAtom() {

@@ -12,6 +12,11 @@ public class RefRegex extends AtomRegex {
     }
 
     @Override
+    void print(int indent) {
+        describe(indent, String.valueOf(n));
+    }
+
+    @Override
     public boolean match(Match match, String text, int start, int end) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }

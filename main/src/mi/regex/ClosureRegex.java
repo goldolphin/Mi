@@ -16,6 +16,12 @@ public class ClosureRegex extends AbstractRegex {
     }
 
     @Override
+    void print(int indent) {
+        describe(indent, String.format("%d, %d", lower, upper));
+        printChildren(indent, clause);
+    }
+
+    @Override
     public boolean match(Match match, String text, int start, int end) {
         return false;  //To change body of implemented methods use File | Settings | File Templates.
     }
