@@ -9,10 +9,11 @@ import java.util.HashSet;
  */
 public class Regex {
     private static EmptyRegex Empty = new EmptyRegex();
+
     private static HashSet<Character> ControlCharSet = new HashSet<>();
 
     static {
-        String str = "^$*+?()[]{}|\\";
+        String str = "^$*+?.()[]{}|\\";
         for(int i = 0; i < str.length(); i ++) {
             ControlCharSet.add(str.charAt(i));
         }
@@ -38,28 +39,78 @@ public class Regex {
         return n >= pattern.length();
     }
 
-    AbstractRegex parseOr(AbstractRegex base) {
-        return null;
+    AbstractRegex parseOr() {
+        AbstractRegex seq = parseSequence();
+        char c = poll();
+        switch (c) {
+            case '|':
+                return new OrRegex(seq, parseOr());
+            default:
+                unpoll();
+                return seq;
+        }
+    }
+
+    AbstractRegex parseSequence() {
+        AbstractRegex cls;
+        try {
+            cls = parseClosure();
+        } catch (RegexException e) {
+            return Empty;
+        }
+        cls.setNext(parseSequence());
+        return cls;
+    }
+
+    AbstractRegex parseClosure() {
+        AbstractRegex term = parseTerm();
+        char c = poll();
+        switch (c) {
+            case '*':
+            case '+':
+            case '?':
+        }
+        return term;
     }
 
     AbstractRegex parseTerm() {
         char c = peek();
         switch (c) {
             case '(':
-               // return parseGroup();
-
+                return parseGroup();
+            default:
+                return parseAtom();
         }
-        return null;
+    }
+
+    AbstractRegex parseGroup() {
+        verify(poll() == '(', "need '('");
+        AbstractRegex or = parseOr();
+        verify(poll() == '(', "need '('");
+        return or;
     }
 
     AtomRegex parseAtom() {
         char c = poll();
         switch (c) {
+            case '.':
+                return new DotRegex();
             case '\\':
-                char next = poll();
-                if(Character.isDigit(next)) return new RefRegex(Integer.parseInt(Character.toString(next)));
-                return new CharRegex(next);
+                char follow = poll();
+                if(Character.isDigit(follow)) {
+                    int ref = Integer.parseInt(Character.toString(follow));
+                    verify(ref < groupCount, "No such group");
+                    return new RefRegex(ref);
+                }
+                return new CharRegex(follow);
+            default:
+                verify(!ControlCharSet.contains(c), "Control Chars");
+                return new CharRegex(c);
         }
-        return null;
+    }
+
+    void verify(boolean cond, String msg) {
+        String s = String.format("%s near '###' marker:\n %s ### %s", msg, pattern.substring(0, n), pattern.substring(n));
+        if (!cond) throw new RegexException(s);
     }
 }
