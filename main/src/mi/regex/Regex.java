@@ -38,7 +38,19 @@ public class Regex {
 
     public Match match(String text) {
         Match match = new Match(text, groupCount);
-        match.setSucceed(regex.match(match, 0));
+        match.setSucceed(regex.match(match, 0) && match.groupEnd(0) == text.length());
+        return match;
+    }
+
+    public Match search(String text) {
+        Match match = new Match(text, groupCount);
+        int len = text.length();
+        for (int i = 0; i < len; i ++) {
+            if (regex.match(match, i)) {
+                match.setSucceed(true);
+                break;
+            }
+        }
         return match;
     }
 
@@ -57,6 +69,10 @@ public class Regex {
 
     void unpoll() {
         offset--;
+    }
+
+    boolean begin() {
+        return offset == 0;
     }
 
     boolean end() {

@@ -49,7 +49,7 @@ public class GroupRegex extends AbstractRegex {
         @Override
         public boolean match(Match match, int offset) {
             match.setGroupEnd(n, offset);
-            return next.match(match, offset);
+            return next.match(match, match.groupStart(n));
         }
     }
 }
