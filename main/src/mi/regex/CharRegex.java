@@ -14,10 +14,17 @@ public class CharRegex extends AtomRegex {
     @Override
     void print(int indent) {
         describe(indent, String.valueOf(c));
+        next.print(indent);
     }
 
     @Override
-    public boolean match(Match match, String text, int start, int end) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean match(Match match, int offset) {
+        if (match.end(offset)) {
+            return false;
+        }
+        if (match.get(offset) == c) {
+            return next.match(match, offset+1);
+        }
+        return false;
     }
 }

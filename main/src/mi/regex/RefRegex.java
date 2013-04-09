@@ -14,10 +14,21 @@ public class RefRegex extends AtomRegex {
     @Override
     void print(int indent) {
         describe(indent, String.valueOf(n));
+        next.print(indent);
     }
 
     @Override
-    public boolean match(Match match, String text, int start, int end) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean match(Match match, int offset) {
+        int start = match.groupStart(n);
+        int end = match.groupEnd(n);
+        if (offset == start) {
+            return next.match(match, end);
+        }
+        for (int i = start; i < end; i++, offset++) {
+            if (match.end(i) || match.get(i) != match.get(offset)) {
+                return false;
+            }
+        }
+        return next.match(match, offset);
     }
 }

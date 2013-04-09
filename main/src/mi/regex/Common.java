@@ -29,10 +29,17 @@ public class Common {
 //        return match(regex, text, newStart, end, lower-1);
 //    }
 //
-    public static void main(String[] args) {
-        Regex regex = new Regex("ab*");
+    public static void main(String[] args) throws InterruptedException {
+        Regex regex = new Regex("(ab|a)*c$");
         regex.dump();
+        Match match = regex.match("abc");
+        match.dump();
 
+        match = regex.match("abcd");
+        match.dump();
+
+        System.out.println();
+        Thread.sleep(100);
         regex = new Regex("ab*\\0");
         regex.dump();
     }

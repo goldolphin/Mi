@@ -13,14 +13,6 @@ public abstract class AbstractRegex {
 
     abstract void print(int indent);
 
-    void printAll(int indent) {
-        print(indent);
-
-        if (next != null) {
-            next.print(indent);
-        }
-    }
-
     protected static void print(int indent, String content) {
         for (int i = 0; i < indent; i++) {
             System.out.print(' ');
@@ -40,5 +32,5 @@ public abstract class AbstractRegex {
         child.print(indent + 4);
     }
 
-    public abstract boolean match(Match match, String text, int start, int end);
+    public abstract boolean match(Match match, int offset);
 }

@@ -24,11 +24,13 @@ public class GroupRegex extends AbstractRegex {
     @Override
     void print(int indent) {
         describe(indent, String.valueOf(n));
+        printChildren(indent, next);
     }
 
     @Override
-    public boolean match(Match match, String text, int start, int end) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean match(Match match, int offset) {
+        match.setGroupStart(n, offset);
+        return next.match(match, offset);
     }
 
     private static class GroupEnd extends AbstractRegex {
@@ -41,11 +43,13 @@ public class GroupRegex extends AbstractRegex {
         @Override
         void print(int indent) {
             describe(indent, String.valueOf(n));
+            next.print(indent);
         }
 
         @Override
-        public boolean match(Match match, String text, int start, int end) {
-            return false;  //To change body of implemented methods use File | Settings | File Templates.
+        public boolean match(Match match, int offset) {
+            match.setGroupEnd(n, offset);
+            return next.match(match, offset);
         }
     }
 }

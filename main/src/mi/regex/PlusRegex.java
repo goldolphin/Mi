@@ -4,21 +4,17 @@ package mi.regex;
  * User: goldolphin
  * Time: 2013-04-04 17:55
  */
-public class PlusRegex extends AbstractRegex {
-    private AtomRegex clause;
+public class PlusRegex extends AsteriskRegex {
 
     public PlusRegex(AtomRegex clause) {
-        this.clause = clause;
+        super(clause);
     }
 
     @Override
-    void print(int indent) {
-        describe(indent);
-        printChildren(indent, clause);
-    }
-
-    @Override
-    public boolean match(Match match, String text, int start, int end) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean match(Match match, int offset) {
+        if (clause.match(match, offset)) {
+            return super.match(match, match.newOffset());
+        }
+        return false;
     }
 }

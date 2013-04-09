@@ -12,7 +12,8 @@ public class EndRegex extends AbstractRegex {
     }
 
     @Override
-    public boolean match(Match match, String text, int start, int end) {
+    public boolean match(Match match, int offset) {
+        match.setNewOffset(offset);
         return true;
     }
 }

@@ -2,9 +2,9 @@ package mi.regex;
 
 /**
  * User: goldolphin
- * Time: 2013-04-08 02:50
+ * Time: 2013-04-09 18:08
  */
-public class DotRegex extends AtomRegex {
+public class DollarRegex extends AbstractRegex {
     @Override
     void print(int indent) {
         describe(indent);
@@ -14,8 +14,8 @@ public class DotRegex extends AtomRegex {
     @Override
     public boolean match(Match match, int offset) {
         if (match.end(offset)) {
-            return false;
+            return next.match(match, offset);
         }
-        return next.match(match, offset+1);
+        return false;
     }
 }

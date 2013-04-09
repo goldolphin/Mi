@@ -1,6 +1,6 @@
 package mi.regex;
 
-import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -22,39 +22,52 @@ public class Regex {
     private final String pattern;
     private final AbstractRegex regex;
     private int groupCount;
-    private int n;
+    private ArrayList<GroupRegex> groups = new ArrayList<>();
+
+    // Temporary variables.
+    private int offset;
 
     public Regex(String pattern) {
         this.pattern = pattern;
-        n = 0;
+        offset = 0;
         groupCount = 0;
-        regex = parseGroup();
-        regex.setNext(End);
+        GroupRegex group = parseGroup();
+        group.groupEnd().setNext(End);
+        regex = group;
+    }
+
+    public Match match(String text) {
+        Match match = new Match(text, groupCount);
+        match.setSucceed(regex.match(match, 0));
+        return match;
     }
 
     void dump() {
+        System.out.println(pattern);
         regex.print(0);
     }
 
     char peek() {
-        return pattern.charAt(n);
+        return pattern.charAt(offset);
     }
 
     char poll() {
-        return pattern.charAt(n++);
+        return pattern.charAt(offset++);
     }
 
     void unpoll() {
-        n--;
+        offset--;
     }
 
     boolean end() {
-        return n >= pattern.length();
+        return offset >= pattern.length();
     }
 
     AbstractRegex parseOr(AbstractRegex end) {
         AbstractRegex seq = parseSequence(end);
-        if (end()) return seq;
+        if (end()) {
+            return seq;
+        }
         char c = poll();
         switch (c) {
             case '|':
@@ -66,24 +79,43 @@ public class Regex {
     }
 
     AbstractRegex parseSequence(AbstractRegex end) {
-        try {
-            AbstractRegex term = parseTerm();
-            if (term instanceof GroupRegex) {
-                GroupRegex group = (GroupRegex) term;
-                AbstractRegex cls = buildClosure(new RefRegex(group.groupNum()));
-                group.groupEnd().setNext(cls);
-                cls.setNext(parseSequence(end));
-                return group;
-            }
-            AbstractRegex cls = buildClosure((AtomRegex) term);
-            cls.setNext(parseSequence(end));
-            return cls;
-        } catch (RegexException e) {
+        if (end()) {
             return end;
         }
+        char c = peek();
+        switch (c) {
+            case ')':
+            case '|':
+                return end;
+            case '^':
+                poll();
+                HatRegex hat = new HatRegex();
+                hat.setNext(parseSequence(end));
+                return hat;
+            case '$':
+                poll();
+                DollarRegex dollar = new DollarRegex();
+                dollar.setNext(parseSequence(end));
+                return dollar;
+        }
+        AbstractRegex term = parseTerm();
+        if (term instanceof GroupRegex) {
+            GroupRegex group = (GroupRegex) term;
+            AbstractRegex cls = buildClosure(new RefRegex(group.groupNum()));
+            cls.setNext(parseSequence(end));
+            group.groupEnd().setNext(cls);
+            return group;
+        }
+        AbstractRegex cls = buildClosure((AtomRegex) term);
+        cls.setNext(parseSequence(end));
+        return cls;
     }
 
     AbstractRegex buildClosure(AtomRegex atom) {
+        atom.setNext(End);
+        if (end()) {
+            return atom;
+        }
         char c = poll();
         switch (c) {
             case '*':
@@ -99,11 +131,10 @@ public class Regex {
     }
 
     AbstractRegex parseTerm() {
-        verify(!end(), "Meet end");
         char c = peek();
         switch (c) {
             case '(':
-                verify(poll() == '(', "need '('");
+                poll();
                 AbstractRegex group = parseGroup();
                 verify(poll() == ')', "need ')'");
                 return group;
@@ -112,10 +143,12 @@ public class Regex {
         }
     }
 
-    AbstractRegex parseGroup() {
-        GroupRegex group = new GroupRegex(groupCount);
+    GroupRegex parseGroup() {
+        int groupNum = groupCount ++;
+        GroupRegex group = new GroupRegex(groupNum);
+        groups.add(null);
         group.setNext(parseOr(group.groupEnd()));
-        groupCount ++;
+        groups.set(groupNum, group);
         return group;
     }
 
@@ -128,7 +161,7 @@ public class Regex {
                 char follow = poll();
                 if(Character.isDigit(follow)) {
                     int ref = Integer.parseInt(Character.toString(follow));
-                    verify(ref < groupCount, "No such group");
+                    verify(groups.get(ref) != null, "No such group");
                     return new RefRegex(ref);
                 }
                 return new CharRegex(follow);
@@ -139,7 +172,7 @@ public class Regex {
     }
 
     void verify(boolean cond, String msg) {
-        String s = String.format("%s near '###' marker:\n %s ### %s", msg, pattern.substring(0, n), pattern.substring(n));
+        String s = String.format("%s near '_###_' marker:\n %s_###_%s", msg, pattern.substring(0, offset), pattern.substring(offset));
         if (!cond) throw new RegexException(s);
     }
 }

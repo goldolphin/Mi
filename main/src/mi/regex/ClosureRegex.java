@@ -19,10 +19,24 @@ public class ClosureRegex extends AbstractRegex {
     void print(int indent) {
         describe(indent, String.format("%d, %d", lower, upper));
         printChildren(indent, clause);
+        next.print(indent);
+    }
+
+    private boolean match(Match match, int offset, int n) {
+        if (n > upper) {
+            return false;
+        }
+        if (clause.match(match, offset) && match(match, match.newOffset(), n+1)) {
+            return true;
+        }
+        if (n < lower) {
+            return false;
+        }
+        return next.match(match, offset);
     }
 
     @Override
-    public boolean match(Match match, String text, int start, int end) {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+    public boolean match(Match match, int offset) {
+        return match(match, offset, 0);
     }
 }
