@@ -8,7 +8,7 @@ import java.util.HashSet;
  * Time: 2013-04-07 21:35
  */
 public class Regex {
-    private static EndRegex End = new EndRegex();
+    private static final EndRegex End = new EndRegex();
 
     private static HashSet<Character> ControlCharSet = new HashSet<>();
 
