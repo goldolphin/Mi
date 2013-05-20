@@ -24,9 +24,10 @@ public class Token {
     public static final Token Assignment = new Token("=");
     public static final Token Colon = new Token(":");
     public static final Token Semicolon = new Token(";");
+    public static final Token Comma = new Token(",");
     public static final Token LParen = new Token("(");
     public static final Token RParen = new Token(")");
-    public static final Token RArrow = new Token("->");
+    public static final Token RArrow = new Token("=>");
     public static final Token Lt = new Token("<");
     public static final Token Gt = new Token(">");
 }
