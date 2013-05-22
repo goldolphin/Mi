@@ -67,10 +67,6 @@ public class Regex {
         return pattern.charAt(offset++);
     }
 
-    void unpoll() {
-        offset--;
-    }
-
     boolean begin() {
         return offset == 0;
     }
@@ -84,12 +80,12 @@ public class Regex {
         if (end()) {
             return seq;
         }
-        char c = poll();
+        char c = peek();
         switch (c) {
             case '|':
+                poll();
                 return new OrRegex(seq, parseOr(end));
             default:
-                unpoll();
                 return seq;
         }
     }
@@ -132,16 +128,18 @@ public class Regex {
         if (end()) {
             return atom;
         }
-        char c = poll();
+        char c = peek();
         switch (c) {
             case '*':
+                poll();
                 return new AsteriskRegex(atom);
             case '+':
+                poll();
                 return new PlusRegex(atom);
             case '?':
+                poll();
                 return new QuestionRegex(atom);
             default:
-                unpoll();
                 return atom;
         }
     }
