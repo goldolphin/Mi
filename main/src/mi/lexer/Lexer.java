@@ -8,55 +8,19 @@ import java.io.Reader;
  * Time: 2013-05-18 10:44
  */
 public class Lexer {
-    private Reader reader;
-    private int lineNum;
-    private int colNum;
+    private static final char EOF = CharReader.EOF;
 
-    private static final char EOF = '\0';
-    private char[] buffer = new char[1];
+    private CharReader reader;
+    private Token token;
+    private StringBuilder buffer = new StringBuilder();
 
-    private TokenInfo token;
-
-    public Lexer(Reader reader) {
+    public Lexer(CharReader reader) {
         this.reader = reader;
-        this.lineNum = 0;
-        this.colNum = 0;
-        forwardChar();
-        forwardInternal();
+//        forwardInternal();
     }
 
-    char peekChar() {
-        return buffer[0];
-    }
 
-    void forwardChar() {
-        try {
-            if(reader.read(buffer, 0, 1) < 0) {
-                buffer[0] = EOF;
-                return;
-            }
-            char c = peekChar();
-            if (c == '\r') {
-                forwardChar();
-            }
-            else if (c == '\n') {
-                lineNum ++;
-                colNum = 0;
-            } else {
-                colNum ++;
-            }
-        } catch (IOException e) {
-            throw new LexException("IO error occurs.", e);
-        }
-    }
-
-    char pollChar() {
-        char c = peekChar();
-        forwardChar();
-        return c;
-    }
-
-    public TokenInfo peek() {
+    public Token peek() {
         return token;
     }
 
@@ -64,23 +28,23 @@ public class Lexer {
         if (token == null) {
             throw new LexException("End of file.");
         }
-        forwardInternal();
+//        forwardInternal();
     }
 
-    public TokenInfo poll() {
-        TokenInfo t = peek();
+    public Token poll() {
+        Token t = peek();
         forward();
         return t;
     }
-
+/*
     void forwardInternal() {
-        char c = peekChar();
+        char c = reader.peek();
         if (c == EOF) {
             token = null;
             return;
         }
-        forwardChar();
-        if (c == '/' && peekChar() == '/') {
+        reader.forward();
+        if (c == '/' && reader.peek() == '/') {
             forwardChar();
             consumeComment();
             forwardInternal();
@@ -97,6 +61,46 @@ public class Lexer {
 
     }
 
+    Token parseId(){
+        char head = reader.peek();
+        if (!Symbols.isIdHead(head)) {
+            return null;
+        }
+        int lineNum = reader.getLineNum();
+        int colNum = reader.getColNum();
+        buffer.setLength(0);
+        buffer.append(head);
+        reader.forward();
+        while (true) {
+            char c = reader.peek();
+            if (!Symbols.isIdTail(c)) {
+                return Token.of(TokenType.Id, buffer.toString(), lineNum, colNum);
+            }
+            buffer.append(c);
+            reader.forward();
+        }
+    }
+
+    Token parseInteger() {
+        char head = reader.peek();
+        if (!Symbols.isDigit(head)) {
+            return null;
+        }
+        int lineNum = reader.getLineNum();
+        int colNum = reader.getColNum();
+        buffer.setLength(0);
+        buffer.append(head);
+        reader.forward();
+        while (true) {
+            char c = reader.peek();
+            if (!Symbols.isDigit(c)) {
+                return Token.of(TokenType.in, buffer.toString(), lineNum, colNum);
+            }
+            buffer.append(c);
+            reader.forward();
+        }
+    }
+
     void consumeComment() {
         char c = peekChar();
         if (c == EOF) {
@@ -108,4 +112,5 @@ public class Lexer {
         }
         consumeComment();
     }
+    */
 }

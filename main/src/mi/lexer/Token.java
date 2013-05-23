@@ -1,33 +1,29 @@
 package mi.lexer;
 
+import java.util.HashMap;
+
 /**
  * User: goldolphin
  * Time: 2013-05-19 16:12
  */
 public class Token {
+    public final TokenType type;
     public final String value;
+    public final int lineNum;
+    public final int colNum;
 
-    public Token(String value) {
+    private Token(TokenType type, String value, int lineNum, int colNum) {
+        this.type = type;
         this.value = value;
+        this.lineNum = lineNum;
+        this.colNum = colNum;
     }
 
-    public static final Token Package = new Token(Symbols.Package);
-    public static final Token Import = new Token(Symbols.Import);
-
-    public static final Token Let = new Token(Symbols.Let);
-    public static final Token Template = new Token(Symbols.Template);
-
-    public static final Token Type = new Token(Symbols.Type);
-    public static final Token Fun = new Token(Symbols.Fun);
-    public static final Token Struct = new Token(Symbols.Struct);
-
-    public static final Token Assignment = new Token(Symbols.Assignment);
-    public static final Token Colon = new Token(Symbols.Colon);
-    public static final Token Semicolon = new Token(Symbols.Semicolon);
-    public static final Token Comma = new Token(Symbols.Comma);
-    public static final Token LParen = new Token(Symbols.LParen);
-    public static final Token RParen = new Token(Symbols.RParen);
-    public static final Token RArrow = new Token(Symbols.RArrow);
-    public static final Token Lt = new Token(Symbols.Lt);
-    public static final Token Gt = new Token(Symbols.Gt);
+    public static Token of(TokenType suggestedType, String value, int lineNum, int colNum) {
+        TokenType type = TokenType.of(value);
+        if (type == null) {
+            type = suggestedType;
+        }
+        return new Token(type, value, lineNum, colNum);
+    }
 }
