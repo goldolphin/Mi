@@ -7,33 +7,33 @@ import java.util.HashMap;
  * Time: 2013-05-22 23:32
  */
 public enum TokenType {
-    Package("package"),
-    Import("import"),
+    PACKAGE("package"),
+    IMPORT("import"),
 
-    Let("let"),
-    Template("template"),
-    Type("type"),
+    LET("let"),
+    TEMPLATE("template"),
+    TYPE("type"),
 
-    Fun("fun"),
-    Struct("struct"),
+    FUN("fun"),
+    STRUCT("struct"),
 
-    Assignment("="),
-    Colon(":"),
-    Semicolon(";"),
-    Comma(","),
-    LParen("("),
-    RParen(")"),
-    RArrow("=>"),
-    Lt("<"),
-    Gt(">"),
+    ASSIGNMENT("="),
+    COLON(":"),
+    SEMICOLON(";"),
+    COMMA(","),
+    LPAREN("("),
+    RPAREN(")"),
+    RARROW("=>"),
+    LT("<"),
+    GT(">"),
 
-    Id(null),
-    Operator(null),
-    Integer(null),
-    Double(null),
-    String(null),
+    ID(null),
+    OPERATOR(null),
+    INTEGER(null),
+    DOUBLE(null),
+    STRING(null),
 
-    Comment(null),
+    COMMENT(null),
     ;
     private static HashMap<String, TokenType> map = new HashMap<>();
     static {

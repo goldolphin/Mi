@@ -1,6 +1,4 @@
-package mi.regex;
-
-import mi.parser.stream.ICharStream;
+package mi.legacy.regex;
 
 /**
  * User: goldolphin
@@ -30,9 +28,9 @@ public class GroupRegex extends AbstractRegex {
     }
 
     @Override
-    public boolean match(ICharStream stream, Match match) {
-        match.setGroupStart(n, match.length());
-        return next.match(stream, match);
+    public boolean match(Match match, int offset) {
+        match.setGroupStart(n, offset);
+        return next.match(match, offset);
     }
 
     private static class GroupEnd extends AbstractRegex {
@@ -49,12 +47,9 @@ public class GroupRegex extends AbstractRegex {
         }
 
         @Override
-        public boolean match(ICharStream stream, Match match) {
-            match.setGroupEnd(n, match.length());
-            if (n > 0) {
-                rollback(stream, match, match.groupStart(n));
-            }
-            return next.match(stream, match);
+        public boolean match(Match match, int offset) {
+            match.setGroupEnd(n, offset);
+            return next.match(match, match.groupStart(n));
         }
     }
 }

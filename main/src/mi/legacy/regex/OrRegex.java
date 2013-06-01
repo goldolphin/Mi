@@ -1,6 +1,4 @@
-package mi.regex;
-
-import mi.parser.stream.ICharStream;
+package mi.legacy.regex;
 
 /**
  * User: goldolphin
@@ -25,12 +23,10 @@ public class OrRegex extends AbstractRegex {
     }
 
     @Override
-    public boolean match(ICharStream stream, Match match) {
-        int len = match.length();
-        if (left.match(stream, match)) {
+    public boolean match(Match match, int offset) {
+        if (left.match(match, offset)) {
             return true;
         }
-        rollback(stream, match, len);
-        return right.match(stream, match);
+        return right.match(match, offset);
     }
 }

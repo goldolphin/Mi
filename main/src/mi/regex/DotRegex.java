@@ -1,5 +1,7 @@
 package mi.regex;
 
+import mi.parser.stream.ICharStream;
+
 /**
  * User: goldolphin
  * Time: 2013-04-08 02:50
@@ -12,10 +14,12 @@ public class DotRegex extends AtomRegex {
     }
 
     @Override
-    public boolean match(Match match, int offset) {
-        if (match.end(offset)) {
-            return false;
+    public boolean match(ICharStream stream, Match match) {
+        char c = stream.peek();
+        if (c != ICharStream.EOF) {
+            match.append(stream.poll());
+            return next.match(stream, match);
         }
-        return next.match(match, offset+1);
+        return false;
     }
 }

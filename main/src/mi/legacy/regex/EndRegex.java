@@ -1,6 +1,4 @@
-package mi.regex;
-
-import mi.parser.stream.ICharStream;
+package mi.legacy.regex;
 
 /**
  * User: goldolphin
@@ -14,7 +12,8 @@ public class EndRegex extends AbstractRegex {
     }
 
     @Override
-    public boolean match(ICharStream stream, Match match) {
+    public boolean match(Match match, int offset) {
+        match.setNewOffset(offset);
         return true;
     }
 }

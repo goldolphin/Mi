@@ -1,5 +1,7 @@
 package mi.regex;
 
+import mi.parser.stream.ICharStream;
+
 /**
  * User: goldolphin
  * Time: 2013-04-04 17:55
@@ -11,10 +13,7 @@ public class PlusRegex extends AsteriskRegex {
     }
 
     @Override
-    public boolean match(Match match, int offset) {
-        if (clause.match(match, offset)) {
-            return super.match(match, match.newOffset());
-        }
-        return false;
+    public boolean match(ICharStream stream, Match match) {
+        return clause.match(stream, match) && super.match(stream, match);
     }
 }

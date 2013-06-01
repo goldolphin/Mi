@@ -1,6 +1,4 @@
-package mi.regex;
-
-import mi.parser.stream.ICharStream;
+package mi.legacy.regex;
 
 /**
  * User: goldolphin
@@ -21,12 +19,10 @@ public class AsteriskRegex extends AbstractRegex {
     }
 
     @Override
-    public boolean match(ICharStream stream, Match match) {
-        int len = match.length();
-        if (clause.match(stream, match) && match(stream, match)) {
+    public boolean match(Match match, int offset) {
+        if (clause.match(match, offset) && match(match, match.newOffset())) {
             return true;
         }
-        rollback(stream, match, len);
-        return next.match(stream, match);
+        return next.match(match, offset);
     }
 }

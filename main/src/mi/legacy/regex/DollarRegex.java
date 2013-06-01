@@ -1,6 +1,4 @@
-package mi.regex;
-
-import mi.parser.stream.ICharStream;
+package mi.legacy.regex;
 
 /**
  * User: goldolphin
@@ -14,9 +12,9 @@ public class DollarRegex extends AbstractRegex {
     }
 
     @Override
-    public boolean match(ICharStream stream, Match match) {
-        if (stream.peek() == ICharStream.EOF) {
-            return next.match(stream, match);
+    public boolean match(Match match, int offset) {
+        if (match.end(offset)) {
+            return next.match(match, offset);
         }
         return false;
     }

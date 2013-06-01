@@ -1,19 +1,20 @@
-package mi.regex;
-
-import mi.parser.stream.ICharStream;
+package mi.legacy.regex;
 
 /**
  * User: goldolphin
  * Time: 2013-04-07 21:14
  */
 public class Match {
-    private StringBuilder buffer;
+    private String text;
     private int[] groupStart;
     private int[] groupEnd;
     private boolean succeed;
 
-    Match(int groupCount) {
-        buffer = new StringBuilder();
+    // Temporary variables
+    private int newOffset;
+
+    Match(String text, int groupCount) {
+        this.text = text;
         groupStart = new int[groupCount];
         groupEnd = new int[groupCount];
         succeed = false;
@@ -28,32 +29,31 @@ public class Match {
     }
 
     public String group(int n) {
-        return buffer.substring(groupStart[n], groupEnd[n]);
-    }
-
-    void reset() {
-        buffer.setLength(0);
-        succeed = false;
-    }
-
-    void append(char c) {
-        buffer.append(c);
-    }
-
-    int length() {
-        return buffer.length();
-    }
-
-    void setLength(int length) {
-        buffer.setLength(length);
-    }
-
-    char get(int offset) {
-        return buffer.charAt(offset);
+        return text.substring(groupStart(n), groupEnd(n));
     }
 
     void setSucceed(boolean succeed) {
         this.succeed = succeed;
+    }
+
+    void setNewOffset(int newOffset) {
+        this.newOffset = newOffset;
+    }
+
+    int newOffset() {
+        return newOffset;
+    }
+
+    char get(int offset) {
+        return text.charAt(offset);
+    }
+
+    boolean begin(int offset) {
+        return offset == 0;
+    }
+
+    boolean end(int offset) {
+        return offset >= text.length();
     }
 
     void setGroupStart(int n, int start) {
@@ -73,8 +73,8 @@ public class Match {
     }
 
     void dump() {
+        System.out.println(text);
         System.out.println(succeed);
-        System.out.println(buffer.toString());
         int groupCount = groupCount();
         for (int i = 0; i < groupCount; i++) {
             System.out.print("group " + i + ": ");

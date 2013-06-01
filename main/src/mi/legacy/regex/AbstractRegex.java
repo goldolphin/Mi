@@ -1,8 +1,4 @@
-package mi.regex;
-
-import mi.parser.pattern.ICharHandler;
-import mi.parser.pattern.ICharPattern;
-import mi.parser.stream.ICharStream;
+package mi.legacy.regex;
 
 /**
  * User: goldolphin
@@ -36,14 +32,5 @@ public abstract class AbstractRegex {
         child.print(indent + 4);
     }
 
-    protected static void rollback(ICharStream stream, Match match, int lastLen) {
-        int needRetract = match.length() - lastLen;
-        if (needRetract > 0) {
-            for (int i = 0; i < needRetract; i ++) {
-                stream.retract();
-            }
-            match.setLength(lastLen);
-        }
-    }
-    public abstract boolean match(ICharStream stream, Match match);
+    public abstract boolean match(Match match, int offset);
 }

@@ -1,7 +1,4 @@
-package mi.regex;
-
-import mi.parser.stream.ICharStream;
-import mi.parser.stream.StringStream;
+package mi.legacy.regex;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -39,23 +36,21 @@ public class Regex {
         regex = group;
     }
 
-    public Match startWith(String text) {
-        return startWith(new StringStream(text));
-    }
-
     public Match match(String text) {
-        return match(new StringStream(text));
-    }
-
-    public Match startWith(ICharStream stream) {
-        Match match = new Match(groupCount);
-        match.setSucceed(regex.match(stream, match));
+        Match match = new Match(text, groupCount);
+        match.setSucceed(regex.match(match, 0) && match.groupEnd(0) == text.length());
         return match;
     }
 
-    public Match match(ICharStream stream) {
-        Match match = new Match(groupCount);
-        match.setSucceed(regex.match(stream, match) && stream.peek() == ICharStream.EOF);
+    public Match search(String text) {
+        Match match = new Match(text, groupCount);
+        int len = text.length();
+        for (int i = 0; i < len; i ++) {
+            if (regex.match(match, i)) {
+                match.setSucceed(true);
+                break;
+            }
+        }
         return match;
     }
 
@@ -70,6 +65,10 @@ public class Regex {
 
     char poll() {
         return pattern.charAt(offset++);
+    }
+
+    boolean begin() {
+        return offset == 0;
     }
 
     boolean end() {

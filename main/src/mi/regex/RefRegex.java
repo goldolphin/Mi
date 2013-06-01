@@ -1,5 +1,7 @@
 package mi.regex;
 
+import mi.parser.stream.ICharStream;
+
 /**
  * User: goldolphin
  * Time: 2013-04-07 21:41
@@ -18,17 +20,22 @@ public class RefRegex extends AtomRegex {
     }
 
     @Override
-    public boolean match(Match match, int offset) {
+    public boolean match(ICharStream stream, Match match) {
+        int len = match.length();
         int start = match.groupStart(n);
         int end = match.groupEnd(n);
-        if (offset == start) {
-            return next.match(match, end);
-        }
-        for (int i = start; i < end; i++, offset++) {
-            if (match.end(i) || match.get(i) != match.get(offset)) {
-                return false;
+        if (len == start) {
+            for (int i = start; i < end; i ++) {
+                match.append(stream.poll());
+            }
+        } else {
+            for (int i = start; i < end; i ++) {
+                if (stream.peek() != match.get(i)) {
+                    return false;
+                }
+                match.append(stream.poll());
             }
         }
-        return next.match(match, offset);
+        return next.match(stream, match);
     }
 }

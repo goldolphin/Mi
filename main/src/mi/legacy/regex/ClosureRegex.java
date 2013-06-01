@@ -1,6 +1,4 @@
-package mi.regex;
-
-import mi.parser.stream.ICharStream;
+package mi.legacy.regex;
 
 /**
  * User: goldolphin
@@ -24,23 +22,21 @@ public class ClosureRegex extends AbstractRegex {
         next.print(indent);
     }
 
-    private boolean match(ICharStream stream, Match match, int n) {
+    private boolean match(Match match, int offset, int n) {
         if (n > upper) {
             return false;
         }
-        int len = match.length();
-        if (clause.match(stream, match) && match(stream, match, n+1)) {
+        if (clause.match(match, offset) && match(match, match.newOffset(), n+1)) {
             return true;
         }
         if (n < lower) {
             return false;
         }
-        rollback(stream, match, len);
-        return next.match(stream, match);
+        return next.match(match, offset);
     }
 
     @Override
-    public boolean match(ICharStream stream, Match match) {
-        return match(stream, match, 0);
+    public boolean match(Match match, int offset) {
+        return match(match, offset, 0);
     }
 }
