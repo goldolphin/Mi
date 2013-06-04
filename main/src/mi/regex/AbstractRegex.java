@@ -1,8 +1,6 @@
 package mi.regex;
 
-import mi.parser.pattern.ICharHandler;
-import mi.parser.pattern.ICharPattern;
-import mi.parser.stream.ICharStream;
+import mi.stream.ICharStream;
 
 /**
  * User: goldolphin

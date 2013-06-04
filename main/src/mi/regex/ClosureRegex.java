@@ -1,17 +1,17 @@
 package mi.regex;
 
-import mi.parser.stream.ICharStream;
+import mi.stream.ICharStream;
 
 /**
  * User: goldolphin
  * Time: 2013-04-04 17:23
  */
 public class ClosureRegex extends AbstractRegex {
-    private AtomRegex clause;
+    private AbstractRegex clause;
     private int lower;
     private int upper;
 
-    public ClosureRegex(AtomRegex clause, int lower, int upper) {
+    public ClosureRegex(AbstractRegex clause, int lower, int upper) {
         this.clause = clause;
         this.lower = lower;
         this.upper = upper;

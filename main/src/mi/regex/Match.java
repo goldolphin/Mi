@@ -1,7 +1,5 @@
 package mi.regex;
 
-import mi.parser.stream.ICharStream;
-
 /**
  * User: goldolphin
  * Time: 2013-04-07 21:14
@@ -28,7 +26,10 @@ public class Match {
     }
 
     public String group(int n) {
-        return buffer.substring(groupStart[n], groupEnd[n]);
+        if (succeed()) {
+            return buffer.substring(groupStart[n], groupEnd[n]);
+        }
+        return null;
     }
 
     void reset() {

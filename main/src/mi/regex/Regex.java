@@ -1,7 +1,7 @@
 package mi.regex;
 
-import mi.parser.stream.ICharStream;
-import mi.parser.stream.StringStream;
+import mi.stream.ICharStream;
+import mi.stream.StringStream;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -119,29 +119,29 @@ public class Regex {
             group.groupEnd().setNext(cls);
             return group;
         }
-        AbstractRegex cls = buildClosure((AtomRegex) term);
+        AbstractRegex cls = buildClosure(term);
         cls.setNext(parseSequence(end));
+
         return cls;
     }
 
-    AbstractRegex buildClosure(AtomRegex atom) {
-        atom.setNext(End);
+    AbstractRegex buildClosure(AbstractRegex term) {
         if (end()) {
-            return atom;
+            return term;
         }
         char c = peek();
         switch (c) {
             case '*':
                 poll();
-                return new AsteriskRegex(atom);
+                return new AsteriskRegex(term);
             case '+':
                 poll();
-                return new PlusRegex(atom);
+                return new PlusRegex(term);
             case '?':
                 poll();
-                return new QuestionRegex(atom);
+                return new QuestionRegex(term);
             default:
-                return atom;
+                return term;
         }
     }
 

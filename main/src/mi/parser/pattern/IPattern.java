@@ -1,6 +1,6 @@
 package mi.parser.pattern;
 
-import mi.parser.stream.IStream;
+import mi.stream.IStream;
 
 /**
  * User: goldolphin

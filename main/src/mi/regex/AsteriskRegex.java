@@ -1,15 +1,15 @@
 package mi.regex;
 
-import mi.parser.stream.ICharStream;
+import mi.stream.ICharStream;
 
 /**
  * User: goldolphin
  * Time: 2013-04-04 17:48
  */
 public class AsteriskRegex extends AbstractRegex {
-    protected AtomRegex clause;
+    protected AbstractRegex clause;
 
-    public AsteriskRegex(AtomRegex clause) {
+    public AsteriskRegex(AbstractRegex clause) {
         this.clause = clause;
     }
 

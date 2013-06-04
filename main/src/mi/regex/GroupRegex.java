@@ -1,6 +1,6 @@
 package mi.regex;
 
-import mi.parser.stream.ICharStream;
+import mi.stream.ICharStream;
 
 /**
  * User: goldolphin
@@ -8,12 +8,19 @@ import mi.parser.stream.ICharStream;
  */
 public class GroupRegex extends AbstractRegex {
     private final int n;
-    private final GroupEnd end;
+    private AbstractRegex clause;
+    private GroupEnd end;
 
     public GroupRegex(int n) {
         this.n = n;
         end = new GroupEnd(n);
     }
+
+    public void setClause(AbstractRegex clause) {
+        this.clause = clause;
+    }
+
+
 
     public AbstractRegex groupEnd() {
         return end;
@@ -26,7 +33,7 @@ public class GroupRegex extends AbstractRegex {
     @Override
     void print(int indent) {
         describe(indent, String.valueOf(n));
-        printChildren(indent, next);
+        printChildren(indent, clause);
     }
 
     @Override
@@ -51,9 +58,6 @@ public class GroupRegex extends AbstractRegex {
         @Override
         public boolean match(ICharStream stream, Match match) {
             match.setGroupEnd(n, match.length());
-            if (n > 0) {
-                rollback(stream, match, match.groupStart(n));
-            }
             return next.match(stream, match);
         }
     }

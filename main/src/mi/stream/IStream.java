@@ -1,4 +1,4 @@
-package mi.parser.stream;
+package mi.stream;
 
 /**
  * Implementation need to provide an EOF item to identify the end-of-stream.

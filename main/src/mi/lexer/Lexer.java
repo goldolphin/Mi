@@ -1,21 +1,21 @@
 package mi.lexer;
 
-import java.io.IOException;
-import java.io.Reader;
+import mi.stream.ICharStream;
 
 /**
  * User: goldolphin
  * Time: 2013-05-18 10:44
  */
 public class Lexer {
-    private static final char EOF = CharReader.EOF;
+    private static final char EOF = ICharStream.EOF;
 
-    private CharReader reader;
+    private ICharStream stream;
     private Token token;
     private StringBuilder buffer = new StringBuilder();
+    private int lineNum;
+    private int colNum;
 
-    public Lexer(CharReader reader) {
-        this.reader = reader;
+    public Lexer(LexStream reader) {
 //        forwardInternal();
     }
 

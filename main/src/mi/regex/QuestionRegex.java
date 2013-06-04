@@ -1,15 +1,15 @@
 package mi.regex;
 
-import mi.parser.stream.ICharStream;
+import mi.stream.ICharStream;
 
 /**
  * User: goldolphin
  * Time: 2013-04-04 17:42
  */
 public class QuestionRegex extends AbstractRegex {
-    private AtomRegex clause;
+    private AbstractRegex clause;
 
-    public QuestionRegex(AtomRegex clause) {
+    public QuestionRegex(AbstractRegex clause) {
         this.clause = clause;
     }
 

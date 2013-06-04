@@ -1,6 +1,6 @@
 package mi.regex;
 
-import mi.parser.stream.ICharStream;
+import mi.stream.ICharStream;
 
 /**
  * User: goldolphin
@@ -8,7 +8,7 @@ import mi.parser.stream.ICharStream;
  */
 public class PlusRegex extends AsteriskRegex {
 
-    public PlusRegex(AtomRegex clause) {
+    public PlusRegex(AbstractRegex clause) {
         super(clause);
     }
 

@@ -11,31 +11,51 @@ public class Common {
         regex.dump();
         System.out.println();
 
-        testMatch(regex, "abc");
+        verify(testMatch(regex, "abc"));
 
-        testMatch(regex, "aabc");
+        verify(!testMatch(regex, "aabc"));
 
-        testMatch(regex, "abcd");
+        verify(!testMatch(regex, "abcd"));
 
-        testStartWith(regex, "abcd");
+        verify(testStartWith(regex, "abcd"));
+
+        verify(testStartWith(new Regex("(a|b)+$"), "aaa"));
+
+        verify(!testStartWith(new Regex("(a|b)+$"), "abb"));
+
+        verify(!testStartWith(new Regex("(a|b)\1*$"), "abb"));
 
         System.out.println();
         Thread.sleep(100);
-        regex = new Regex("ab*\\0");
-        regex.dump();
+        try {
+            regex = new Regex("ab*\\0");
+            regex.dump();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return;
+        }
+        verify(false);
     }
 
-    static void testMatch(Regex regex, String text) {
+    static boolean testMatch(Regex regex, String text) {
         System.out.println(text);
         Match match = regex.match(text);
         match.dump();
         System.out.println();
+        return match.succeed();
     }
 
-    static void testStartWith(Regex regex, String text) {
+    static boolean testStartWith(Regex regex, String text) {
         System.out.println(text);
         Match match = regex.startWith(text);
         match.dump();
         System.out.println();
+        return match.succeed();
+    }
+
+    static void verify(boolean condition) {
+        if (!condition) {
+            throw new RuntimeException("Verification fails.");
+        }
     }
 }

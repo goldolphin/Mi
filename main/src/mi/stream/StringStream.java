@@ -1,4 +1,4 @@
-package mi.parser.stream;
+package mi.stream;
 
 /**
  * User: goldolphin
