@@ -1,5 +1,7 @@
 package mi.regex;
 
+import java.util.regex.Pattern;
+
 /**
  * User: goldolphin
  * Time: 2013-04-04 17:58
@@ -7,21 +9,27 @@ package mi.regex;
 public class Common {
 
     public static void main(String[] args) throws InterruptedException {
+        verify(Pattern.compile("^(a|b)+$").matcher("abb").matches());
+
         Regex regex = new Regex("(ab|a)c");
         regex.dump();
         System.out.println();
 
-        verify(testMatch(regex, "abc"));
+        verify(testMatch(new Regex("(ab|a)c"), "abc"));
 
-        verify(!testMatch(regex, "aabc"));
+        verify(!testMatch(new Regex("(ab|a)c"), "aabc"));
 
-        verify(!testMatch(regex, "abcd"));
+        verify(!testMatch(new Regex("(ab|a)c"), "abcd"));
 
-        verify(testStartWith(regex, "abcd"));
+        verify(testStartWith(new Regex("(ab|a)c"), "abcd"));
+
+        regex = new Regex("a+$");
+        regex.dump();
+        System.out.println();
 
         verify(testStartWith(new Regex("(a|b)+$"), "aaa"));
 
-        verify(!testStartWith(new Regex("(a|b)+$"), "abb"));
+        verify(testStartWith(new Regex("(a|b)+$"), "abb"));
 
         verify(!testStartWith(new Regex("(a|b)\1*$"), "abb"));
 

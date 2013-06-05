@@ -6,6 +6,7 @@ import mi.stream.ICharStream;
  * User: goldolphin
  * Time: 2013-04-04 17:23
  */
+@Deprecated
 public class ClosureRegex extends AbstractRegex {
     private AbstractRegex clause;
     private int lower;
@@ -15,6 +16,7 @@ public class ClosureRegex extends AbstractRegex {
         this.clause = clause;
         this.lower = lower;
         this.upper = upper;
+        clause.setNext(this);
     }
 
     @Override

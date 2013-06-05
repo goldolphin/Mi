@@ -23,7 +23,8 @@ public class QuestionRegex extends AbstractRegex {
     @Override
     public boolean match(ICharStream stream, Match match) {
         int len = match.length();
-        if (clause.match(stream, match) && next.match(stream, match)) {
+        clause.setNext(next);
+        if (clause.match(stream, match)) {
             return true;
         }
         rollback(stream, match, len);

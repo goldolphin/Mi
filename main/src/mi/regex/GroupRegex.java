@@ -20,7 +20,10 @@ public class GroupRegex extends AbstractRegex {
         this.clause = clause;
     }
 
-
+    @Override
+    protected void setNext(AbstractRegex next) {
+        end.setNext(next);
+    }
 
     public AbstractRegex groupEnd() {
         return end;
@@ -39,7 +42,7 @@ public class GroupRegex extends AbstractRegex {
     @Override
     public boolean match(ICharStream stream, Match match) {
         match.setGroupStart(n, match.length());
-        return next.match(stream, match);
+        return clause.match(stream, match);
     }
 
     private static class GroupEnd extends AbstractRegex {

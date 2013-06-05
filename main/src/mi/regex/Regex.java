@@ -35,7 +35,7 @@ public class Regex {
         offset = 0;
         groupCount = 0;
         GroupRegex group = parseGroup();
-        group.groupEnd().setNext(End);
+        group.setNext(End);
         regex = group;
     }
 
@@ -76,18 +76,20 @@ public class Regex {
         return offset >= pattern.length();
     }
 
-    AbstractRegex parseOr(AbstractRegex end) {
-        AbstractRegex seq = parseSequence(end);
+    AbstractRegex parseOr(AbstractRegex left, AbstractRegex end) {
+        if (left == null) {
+            return parseOr(parseSequence(end), end);
+        }
         if (end()) {
-            return seq;
+            return left;
         }
         char c = peek();
         switch (c) {
             case '|':
                 poll();
-                return new OrRegex(seq, parseOr(end));
+                return parseOr(new OrRegex(left, parseSequence(end)), end);
             default:
-                return seq;
+                return left;
         }
     }
 
@@ -111,21 +113,13 @@ public class Regex {
                 dollar.setNext(parseSequence(end));
                 return dollar;
         }
-        AbstractRegex term = parseTerm();
-        if (term instanceof GroupRegex) {
-            GroupRegex group = (GroupRegex) term;
-            AbstractRegex cls = buildClosure(new RefRegex(group.groupNum()));
-            cls.setNext(parseSequence(end));
-            group.groupEnd().setNext(cls);
-            return group;
-        }
-        AbstractRegex cls = buildClosure(term);
+        AbstractRegex cls = buildClosure(parseTerm());
         cls.setNext(parseSequence(end));
-
         return cls;
     }
 
     AbstractRegex buildClosure(AbstractRegex term) {
+        term.setNext(End);
         if (end()) {
             return term;
         }
@@ -160,9 +154,9 @@ public class Regex {
 
     GroupRegex parseGroup() {
         int groupNum = groupCount ++;
-        GroupRegex group = new GroupRegex(groupNum);
         groups.add(null);
-        group.setNext(parseOr(group.groupEnd()));
+        GroupRegex group = new GroupRegex(groupNum);
+        group.setClause(parseOr(null, group.groupEnd()));
         groups.set(groupNum, group);
         return group;
     }
@@ -181,7 +175,7 @@ public class Regex {
                 }
                 return new CharRegex(follow);
             default:
-                verify(!ControlCharSet.contains(c), "Control Chars");
+                verify(!ControlCharSet.contains(c), "Redundant control chars");
                 return new CharRegex(c);
         }
     }

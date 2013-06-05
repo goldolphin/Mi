@@ -14,6 +14,13 @@ public class PlusRegex extends AsteriskRegex {
 
     @Override
     public boolean match(ICharStream stream, Match match) {
-        return clause.match(stream, match) && super.match(stream, match);
+        int len = match.length();
+        clause.setNext(this);
+        if (clause.match(stream, match)) {
+            return true;
+        }
+        rollback(stream, match, len);
+        clause.setNext(next);
+        return clause.match(stream, match);
     }
 }
