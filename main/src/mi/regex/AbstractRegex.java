@@ -34,7 +34,7 @@ public abstract class AbstractRegex {
         child.print(indent + 4);
     }
 
-    protected static void rollback(ICharStream stream, Match match, int lastLen) {
+    static void rollback(ICharStream stream, Match match, int lastLen) {
         int needRetract = match.length() - lastLen;
         if (needRetract > 0) {
             for (int i = 0; i < needRetract; i ++) {

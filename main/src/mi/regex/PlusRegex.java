@@ -6,6 +6,7 @@ import mi.stream.ICharStream;
  * User: goldolphin
  * Time: 2013-04-04 17:55
  */
+@Deprecated
 public class PlusRegex extends AsteriskRegex {
 
     public PlusRegex(AbstractRegex clause) {

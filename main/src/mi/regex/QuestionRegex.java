@@ -6,6 +6,7 @@ import mi.stream.ICharStream;
  * User: goldolphin
  * Time: 2013-04-04 17:42
  */
+@Deprecated
 public class QuestionRegex extends AbstractRegex {
     private AbstractRegex clause;
 

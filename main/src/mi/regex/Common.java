@@ -27,9 +27,9 @@ public class Common {
         regex.dump();
         System.out.println();
 
-        verify(testStartWith(new Regex("(a|b)+$"), "aaa"));
+        verify(testStartWith(new Regex("(a|b)+$"), "a"));
 
-        verify(testStartWith(new Regex("(a|b)+$"), "abb"));
+        verify(testStartWith(new Regex("(a|b)+$"), "ab"));
 
         verify(!testStartWith(new Regex("(a|b)\1*$"), "abb"));
 

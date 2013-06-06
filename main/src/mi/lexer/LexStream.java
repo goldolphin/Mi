@@ -4,54 +4,58 @@ import mi.stream.ICharStream;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 
 /**
  * User: goldolphin
  * Time: 2013-05-22 22:59
  */
-public class LexStream {
+public class LexStream implements ICharStream {
 
-    private ICharStream reader;
+    private ICharStream source;
+    private int charNum;
     private int lineNum;
     private int colNum;
+    private ArrayList<Integer> lineStarts;
 
-    private char[] buffer = new char[1];
-
-    public LexStream(ICharStream reader) {
-        this.reader = reader;
-        this.lineNum = 0;
-        this.colNum = 0;
-        forward();
+    public LexStream(ICharStream source) {
+        this.source = source;
+        charNum = 0;
+        lineNum = 0;
+        colNum = 0;
+        lineStarts = new ArrayList<>(1024);
+        lineStarts.add(0);
     }
 
     public char peek() {
-        return buffer[0];
+        char c = source.peek();
+        if (c == '\r') {
+            source.poll();
+            return peek();
+        }
+        return c;
     }
 
-    public void forward() {
-/*        try {
-            if(reader.read(buffer, 0, 1) < 0) {
-                buffer[0] = EOF;
-                return;
-            }
-            char c = peek();
-            if (c == '\r') {
-                forward();
-            } else if (c == '\n') {
-                lineNum ++;
-                colNum = 0;
-            } else {
-                colNum ++;
-            }
-        } catch (IOException e) {
-            throw new LexException("IO error occurs.", e);
-        }
-  */  }
-
     public char poll() {
-        char c = peek();
-        forward();
+        char c = source.poll();
+        if (c == '\r') {
+            return poll();
+        }
+        charNum ++;
+        if (c == '\n') {
+            lineNum ++;
+            colNum = 0;
+        } else {
+
+        }
+
+        source.poll();
         return c;
+    }
+
+    @Override
+    public void retract() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     public int getLineNum() {

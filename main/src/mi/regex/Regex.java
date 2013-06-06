@@ -49,14 +49,23 @@ public class Regex {
 
     public Match startWith(ICharStream stream) {
         Match match = new Match(groupCount);
-        match.setSucceed(regex.match(stream, match));
+        match.setSucceed(match(stream, match));
         return match;
     }
 
     public Match match(ICharStream stream) {
         Match match = new Match(groupCount);
-        match.setSucceed(regex.match(stream, match) && stream.peek() == ICharStream.EOF);
+        match.setSucceed(match(stream, match) && stream.peek() == ICharStream.EOF);
         return match;
+    }
+
+    boolean match(ICharStream stream, Match match) {
+        int len = match.length();
+        if (regex.match(stream, match)) {
+            return true;
+        }
+        AbstractRegex.rollback(stream, match, len);
+        return false;
     }
 
     void dump() {
@@ -119,7 +128,6 @@ public class Regex {
     }
 
     AbstractRegex buildClosure(AbstractRegex term) {
-        term.setNext(End);
         if (end()) {
             return term;
         }
@@ -127,13 +135,13 @@ public class Regex {
         switch (c) {
             case '*':
                 poll();
-                return new AsteriskRegex(term);
+                return new ClosureRegex(term, 0);
             case '+':
                 poll();
-                return new PlusRegex(term);
+                return new ClosureRegex(term, 1);
             case '?':
                 poll();
-                return new QuestionRegex(term);
+                return new ClosureRegex(term, 0, 1);
             default:
                 return term;
         }
@@ -181,7 +189,7 @@ public class Regex {
     }
 
     void verify(boolean cond, String msg) {
-        String s = String.format("%s near '_###_' marker:\n %s_###_%s", msg, pattern.substring(0, offset), pattern.substring(offset));
+        String s = String.format("%s before '_###_' marker:\n %s_###_%s", msg, pattern.substring(0, offset), pattern.substring(offset));
         if (!cond) throw new RegexException(s);
     }
 }
