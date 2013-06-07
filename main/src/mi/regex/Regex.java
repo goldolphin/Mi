@@ -1,5 +1,6 @@
 package mi.regex;
 
+import mi.common.CharDef;
 import mi.stream.ICharStream;
 import mi.stream.StringStream;
 
@@ -176,17 +177,43 @@ public class Regex {
                 return new DotRegex();
             case '\\':
                 char follow = poll();
-                if(Character.isDigit(follow)) {
+                if(CharDef.isDigit(follow)) {
                     int ref = Integer.parseInt(Character.toString(follow));
                     verify(groups.get(ref) != null, "No such group");
                     return new RefRegex(ref);
                 }
                 return new CharRegex(follow);
+            case '[':
+
             default:
                 verify(!ControlCharSet.contains(c), "Redundant control chars");
                 return new CharRegex(c);
         }
     }
+
+    SetRegex parseSet() {
+        boolean inclusive = true;
+        if (peek() == '^') {
+            inclusive = false;
+            poll();
+        }
+        SetRegex regex = new SetRegex(inclusive);
+        while (true) {
+            char c = poll();
+            switch (c) {
+                case '\\':
+                    regex.add(poll());
+                    break;
+                case ']':
+                    verify(regex.count() > 0, "Empty set");
+                    return regex;
+                default:
+                    regex.add(c);
+            }
+        }
+    }
+
+
 
     void verify(boolean cond, String msg) {
         String s = String.format("%s before '_###_' marker:\n %s_###_%s", msg, pattern.substring(0, offset), pattern.substring(offset));

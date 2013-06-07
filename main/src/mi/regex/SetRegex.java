@@ -3,54 +3,45 @@ package mi.regex;
 import mi.stream.ICharStream;
 
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: goldolphin
  * Time: 2013-06-06 23:22
  */
 public class SetRegex extends AtomRegex {
-    //private final boolean inverse;
-
-    private final Bitmap map;
-    private final int min;
-    private final int max;
+    private final boolean inclusive;
+    private final CharacterSet set;
+    private int count;
 
 
-    public SetRegex(char[] array) {
-        int min = Integer.MAX_VALUE;
-        int max = 0;
-        for (char c: array) {
-            if (min > c) {
-                min = c;
-            }
-            if (max < c) {
-                max = c;
-            }
-        }
-        this.min = min;
-        this.max = max;
-        map = new Bitmap(max-min+1);
-        for (char c: array) {
+    public SetRegex(boolean inclusive) {
+        this.inclusive = inclusive;
+        set = new CharacterSet(512);
+        count = 0;
+    }
 
+    public void add(char c) {
+        if (!set.contains(c)) {
+            set.add(c);
+            count ++;
         }
     }
 
-    void set(char c) {
-        map.set(c-min, true);
+    public int count() {
+        return count;
     }
-
-
 
     @Override
     void print(int indent) {
-        describe(indent, String.valueOf(max-min+1));
+        describe(indent, (inclusive ? "inclusive" : "exclusive") + ", " + count);
         next.print(indent);
     }
 
     @Override
     public boolean match(ICharStream stream, Match match) {
         char c = stream.peek();
-        if (map.get(c-min)) {
+        if (inclusive == set.contains(c)) {
             match.append(stream.poll());
             return next.match(stream, match);
         }

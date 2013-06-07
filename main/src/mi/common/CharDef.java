@@ -1,4 +1,4 @@
-package mi.lexer;
+package mi.common;
 
 import java.util.HashSet;
 
@@ -6,7 +6,7 @@ import java.util.HashSet;
  * User: goldolphin
  * Time: 2013-05-20 20:29
  */
-public final class Symbols {
+public final class CharDef {
     public static boolean isDigit(char c) {
         return c >= '0' && c <= '9';
     }

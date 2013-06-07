@@ -9,12 +9,8 @@ public class Bitmap {
 
     private static final int M = 8;
 
-    /**
-     *
-     * @param size must be divisible by 8
-     */
-    public Bitmap(int size) {
-        bytes = new byte[size/M];
+    public Bitmap(int requestedCapacity) {
+        bytes = new byte[(requestedCapacity+M-1)/M];
     }
 
     public boolean get(int n) {
