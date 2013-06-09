@@ -6,7 +6,26 @@ import java.util.HashSet;
  * User: goldolphin
  * Time: 2013-05-20 20:29
  */
-public final class CharDef {
+public enum CharType {
+    DIGIT,
+    UPPERCASE,
+    LOWERCASE,
+    OTHER,
+    ;
+
+    public static CharType getType(char c) {
+        if (isDigit(c)) {
+            return DIGIT;
+        }
+        if (isUpperCase(c)) {
+            return UPPERCASE;
+        }
+        if (isLowerCase(c)) {
+            return LOWERCASE;
+        }
+        return OTHER;
+    }
+
     public static boolean isDigit(char c) {
         return c >= '0' && c <= '9';
     }

@@ -38,11 +38,17 @@ public class Common {
         try {
             regex = new Regex("ab*\\0");
             regex.dump();
+            verify(false);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return;
+            System.out.println();
         }
-        verify(false);
+
+        verify(testStartWith(new Regex("[1-3]"), "2"));
+        verify(!testStartWith(new Regex("[1-3]"), "4"));
+        verify(!testStartWith(new Regex("[^1-3]"), "2"));
+        verify(testStartWith(new Regex("[^1-3]{2,4}"), "4^"));
+        new Regex("[^1-3a]{2,4}").dump();
     }
 
     static boolean testMatch(Regex regex, String text) {

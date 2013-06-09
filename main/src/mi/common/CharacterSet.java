@@ -1,4 +1,6 @@
-package mi.regex;
+package mi.common;
+
+import mi.common.Bitmap;
 
 /**
  * User: goldolphin
@@ -8,6 +10,10 @@ public class CharacterSet {
     private static final int MAX_NUM = 256*256;
     private Bitmap[] maps;
     private final int slotSize;
+
+    public CharacterSet() {
+        this(32);
+    }
 
     public CharacterSet(int slotNum) {
         maps = new Bitmap[slotNum];

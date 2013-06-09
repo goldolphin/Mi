@@ -1,9 +1,7 @@
 package mi.regex;
 
+import mi.common.CharacterSet;
 import mi.stream.ICharStream;
-
-import java.util.Collection;
-import java.util.List;
 
 /**
  * User: goldolphin
@@ -17,7 +15,7 @@ public class SetRegex extends AtomRegex {
 
     public SetRegex(boolean inclusive) {
         this.inclusive = inclusive;
-        set = new CharacterSet(512);
+        set = new CharacterSet();
         count = 0;
     }
 
@@ -41,7 +39,7 @@ public class SetRegex extends AtomRegex {
     @Override
     public boolean match(ICharStream stream, Match match) {
         char c = stream.peek();
-        if (inclusive == set.contains(c)) {
+        if (c != ICharStream.EOF && inclusive == set.contains(c)) {
             match.append(stream.poll());
             return next.match(stream, match);
         }

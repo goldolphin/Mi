@@ -71,6 +71,7 @@ public class ClosureRegex extends AbstractRegex {
             }
 
             int len = match.length();
+            int r = repeated;
             if (clause.match(stream, match)) {
                 return true;
             }
@@ -78,6 +79,7 @@ public class ClosureRegex extends AbstractRegex {
                 return false;
             }
             rollback(stream, match, len);
+            repeated = r;
             return next.match(stream, match);
         }
     }

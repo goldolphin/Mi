@@ -1,25 +1,24 @@
 package mi.regex;
 
-import mi.common.CharDef;
+import mi.common.CharType;
+import mi.common.CharacterSet;
 import mi.stream.ICharStream;
 import mi.stream.StringStream;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 /**
  * User: goldolphin
- * Time: 2013-04-07 21:35
+ * Time: 2013-06-08 23:51
  */
 public class Regex {
     private static final EndRegex End = new EndRegex();
 
-    private static HashSet<Character> ControlCharSet = new HashSet<>();
-
+    private static final CharacterSet CONTROL_CHARS;
     static {
-        String str = "^$*+?.()[]{}|\\";
-        for(int i = 0; i < str.length(); i ++) {
-            ControlCharSet.add(str.charAt(i));
+        CONTROL_CHARS = new CharacterSet();
+        for(char c: "^$*+?.()[]{}|\\".toCharArray()) {
+            CONTROL_CHARS.add(c);
         }
     }
 
@@ -28,14 +27,12 @@ public class Regex {
     private int groupCount;
     private ArrayList<GroupRegex> groups = new ArrayList<>();
 
-    // Temporary variables.
-    private int offset;
-
     public Regex(String pattern) {
         this.pattern = pattern;
-        offset = 0;
         groupCount = 0;
-        GroupRegex group = parseGroup();
+        StringStream stream = new StringStream(pattern);
+        GroupRegex group = parseGroup(stream);
+        verify(stream.peek() == ICharStream.EOF, stream.getPos(), "Unexpected input");
         group.setNext(End);
         regex = group;
     }
@@ -74,149 +71,172 @@ public class Regex {
         regex.print(0);
     }
 
-    char peek() {
-        return pattern.charAt(offset);
-    }
-
-    char poll() {
-        return pattern.charAt(offset++);
-    }
-
-    boolean end() {
-        return offset >= pattern.length();
-    }
-
-    AbstractRegex parseOr(AbstractRegex left, AbstractRegex end) {
+    AbstractRegex parseOr(StringStream stream, AbstractRegex left, AbstractRegex end) {
         if (left == null) {
-            return parseOr(parseSequence(end), end);
+            return parseOr(stream, parseSequence(stream, end), end);
         }
-        if (end()) {
-            return left;
-        }
-        char c = peek();
-        switch (c) {
+        switch (stream.peek()) {
             case '|':
-                poll();
-                return parseOr(new OrRegex(left, parseSequence(end)), end);
+                stream.poll();
+                return parseOr(stream, new OrRegex(left, parseSequence(stream, end)), end);
             default:
                 return left;
         }
     }
 
-    AbstractRegex parseSequence(AbstractRegex end) {
-        if (end()) {
+    AbstractRegex parseSequence(StringStream stream, AbstractRegex end) {
+        AbstractRegex cls = parseClosure(stream);
+        if (cls == null) {
             return end;
         }
-        char c = peek();
-        switch (c) {
-            case ')':
-            case '|':
-                return end;
-            case '^':
-                poll();
-                HatRegex hat = new HatRegex();
-                hat.setNext(parseSequence(end));
-                return hat;
-            case '$':
-                poll();
-                DollarRegex dollar = new DollarRegex();
-                dollar.setNext(parseSequence(end));
-                return dollar;
-        }
-        AbstractRegex cls = buildClosure(parseTerm());
-        cls.setNext(parseSequence(end));
+        cls.setNext(parseSequence(stream, end));
         return cls;
     }
 
-    AbstractRegex buildClosure(AbstractRegex term) {
-        if (end()) {
-            return term;
+    AbstractRegex parseClosure(StringStream stream) {
+        switch (stream.peek()) {
+            case '^':
+                stream.poll();
+                return new HatRegex();
+            case '$':
+                stream.poll();
+                return new DollarRegex();
         }
-        char c = peek();
-        switch (c) {
+        AbstractRegex term = parseTerm(stream);
+        if (term == null) {
+            return null;
+        }
+        switch (stream.peek()) {
             case '*':
-                poll();
+                stream.poll();
                 return new ClosureRegex(term, 0);
             case '+':
-                poll();
+                stream.poll();
                 return new ClosureRegex(term, 1);
             case '?':
-                poll();
+                stream.poll();
                 return new ClosureRegex(term, 0, 1);
+            case '{':
+                stream.poll();
+                int start = parseNumber(stream);
+                int end = start;
+                if (stream.peek() == ',') {
+                    stream.poll();
+                    end = parseNumber(stream);
+                    verify(start <= end, stream.getPos(), "Invalid repeat range");
+                }
+                verify(stream.poll() == '}', stream.getPos(), "Missing '}'");
+                return new ClosureRegex(term, start, end);
             default:
                 return term;
         }
     }
 
-    AbstractRegex parseTerm() {
-        char c = peek();
-        switch (c) {
+    int parseNumber(StringStream stream) {
+        StringBuilder buffer = new StringBuilder();
+        while (CharType.isDigit(stream.peek())) {
+            buffer.append(stream.poll());
+        }
+        verify(buffer.length() > 0, stream.getPos(), "Missing number");
+        return Integer.parseInt(buffer.toString());
+    }
+
+    AbstractRegex parseTerm(StringStream stream) {
+        switch (stream.peek()) {
             case '(':
-                poll();
-                AbstractRegex group = parseGroup();
-                verify(poll() == ')', "need ')'");
+                stream.poll();
+                AbstractRegex group = parseGroup(stream);
+                verify(stream.poll() == ')', stream.getPos(), "Missing ']'");
                 return group;
             default:
-                return parseAtom();
+                return parseAtom(stream);
         }
     }
 
-    GroupRegex parseGroup() {
+    GroupRegex parseGroup(StringStream stream) {
         int groupNum = groupCount ++;
         groups.add(null);
         GroupRegex group = new GroupRegex(groupNum);
-        group.setClause(parseOr(null, group.groupEnd()));
+        group.setClause(parseOr(stream, null, group.groupEnd()));
         groups.set(groupNum, group);
         return group;
     }
 
-    AtomRegex parseAtom() {
-        char c = poll();
+    AtomRegex parseAtom(StringStream stream) {
+        char c = stream.peek();
         switch (c) {
             case '.':
+                stream.poll();
                 return new DotRegex();
             case '\\':
-                char follow = poll();
-                if(CharDef.isDigit(follow)) {
+                stream.poll();
+                char follow = stream.poll();
+                verify(follow != ICharStream.EOF, stream.getPos(), "Unexpected end");
+                if(CharType.isDigit(follow)) {
                     int ref = Integer.parseInt(Character.toString(follow));
-                    verify(groups.get(ref) != null, "No such group");
+                    verify(groups.get(ref) != null, stream.getPos(), "No such group");
                     return new RefRegex(ref);
                 }
                 return new CharRegex(follow);
             case '[':
-
+                stream.poll();
+                SetRegex set = parseSet(stream);
+                verify(stream.poll() == ']', stream.getPos(), "Missing ']'");
+                return set;
             default:
-                verify(!ControlCharSet.contains(c), "Redundant control chars");
-                return new CharRegex(c);
+                if (isRegular(c)) {
+                    stream.poll();
+                    return new CharRegex(c);
+                }
+                return null;
         }
     }
 
-    SetRegex parseSet() {
+    SetRegex parseSet(StringStream stream) {
         boolean inclusive = true;
-        if (peek() == '^') {
+        if (stream.peek() == '^') {
             inclusive = false;
-            poll();
+            stream.poll();
         }
         SetRegex regex = new SetRegex(inclusive);
         while (true) {
-            char c = poll();
-            switch (c) {
-                case '\\':
-                    regex.add(poll());
-                    break;
-                case ']':
-                    verify(regex.count() > 0, "Empty set");
-                    return regex;
-                default:
-                    regex.add(c);
+            char c = stream.peek();
+            if (c == '\\') {
+                stream.poll();
+                char follow = stream.poll();
+                verify(follow != ICharStream.EOF, stream.getPos(), "Unexpected end");
+                regex.add(follow);
+            } else if (c != ICharStream.EOF && c!= ']') {
+                regex.add(stream.poll());
+                parseRange(stream, regex, c);
+            } else {
+                break;
             }
+        }
+        verify(regex.count() > 0, stream.getPos(), "Empty set");
+        return regex;
+    }
+
+    void parseRange(StringStream stream, SetRegex set, char start) {
+        CharType type = CharType.getType(start);
+        if (!(type == CharType.DIGIT || type == CharType.UPPERCASE || type == CharType.LOWERCASE) || stream.peek() != '-') {
+            return;
+        }
+        stream.poll();
+        char follow = stream.poll();
+        verify((CharType.getType(follow) == type) && start < follow, stream.getPos(), "Invalid character range");
+        for (char c = (char) (start + 1); c <= follow; c ++) {
+            set.add(c);
         }
     }
 
+    static boolean isRegular(char c) {
+        return c != ICharStream.EOF && !CONTROL_CHARS.contains(c);
+    }
 
-
-    void verify(boolean cond, String msg) {
-        String s = String.format("%s before '_###_' marker:\n %s_###_%s", msg, pattern.substring(0, offset), pattern.substring(offset));
+    void verify(boolean cond, int pos, String msg) {
+        String s = String.format("%s before '_###_' marker:\n %s_###_%s", msg, pattern.substring(0, pos), pattern.substring(pos));
         if (!cond) throw new RegexException(s);
     }
+
 }

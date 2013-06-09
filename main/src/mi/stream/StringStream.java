@@ -13,6 +13,10 @@ public class StringStream implements ICharStream {
         pos = 0;
     }
 
+    public int getPos() {
+        return pos;
+    }
+
     @Override
     public char peek() {
         if (pos < 0 || pos >= source.length()) {

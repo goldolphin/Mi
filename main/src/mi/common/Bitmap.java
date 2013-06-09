@@ -1,4 +1,4 @@
-package mi.regex;
+package mi.common;
 
 /**
  * User: goldolphin
