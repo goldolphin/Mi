@@ -17,13 +17,14 @@ public enum TokenType {
     FUN("fun"),
     STRUCT("struct"),
 
-    ASSIGNMENT("="),
     COLON(":"),
     SEMICOLON(";"),
     COMMA(","),
     LPAREN("("),
     RPAREN(")"),
+
     RARROW("=>"),
+    ASSIGNMENT("="),
     LT("<"),
     GT(">"),
 

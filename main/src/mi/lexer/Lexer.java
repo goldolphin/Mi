@@ -9,7 +9,7 @@ import mi.stream.ICharStream;
 public class Lexer {
     private static final char EOF = ICharStream.EOF;
 
-    private ICharStream stream;
+    private LexStream stream;
     private Token token;
     private StringBuilder buffer = new StringBuilder();
     private int lineNum;

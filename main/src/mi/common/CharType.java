@@ -1,7 +1,5 @@
 package mi.common;
 
-import java.util.HashSet;
-
 /**
  * User: goldolphin
  * Time: 2013-05-20 20:29
@@ -50,16 +48,22 @@ public enum CharType {
         return isIdHead(c) || isDigit(c);
     }
 
-    private static final HashSet<Character> OperatorChars = new HashSet<>();
+    private static final CharacterSet OPERATOR_CHARS = new CharacterSet();
+    private static final CharacterSet CONTROL_CHARS = new CharacterSet();
 
     static {
         for (char c: "|&^!=<>+-*/%~".toCharArray()) {
-            OperatorChars.add(c);
+            OPERATOR_CHARS.add(c);
+        }
+
+        for (char c: "\r\n\f".toCharArray()) {
+            CONTROL_CHARS.add(c);
         }
     }
 
+
     public static boolean isOperatorPart(char c) {
-        return OperatorChars.contains(c);
+        return OPERATOR_CHARS.contains(c);
     }
 
     public static boolean isNewLineChar(char c){
@@ -68,5 +72,9 @@ public enum CharType {
 
     public static boolean isSpaceChar(char c) {
         return c == ' ' || c == '\t';
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Character.isISOControl(' '));
     }
 }

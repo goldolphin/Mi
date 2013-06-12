@@ -13,6 +13,10 @@ public class StringStream implements ICharStream {
         pos = 0;
     }
 
+    public void reset() {
+        pos = 0;
+    }
+
     public int getPos() {
         return pos;
     }
