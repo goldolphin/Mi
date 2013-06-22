@@ -1,5 +1,6 @@
-package mi.common;
+package mi.match;
 
+import mi.common.Utils;
 import mi.stream.ICharStream;
 
 import java.util.Arrays;
@@ -17,23 +18,22 @@ public class KMPSearcher {
         fail = new int[this.pattern.length-1];
         for (int i = 0; i < fail.length; i ++) {
             if (i == 0) {
-                fail[i] = 0;
+                fail[i] = -1;
                 continue;
             }
             char c = this.pattern[i];
             for (int f = fail[i-1]; ; ) {
-                if (c == this.pattern[f]) {
+                if (c == this.pattern[f+1]) {
                     fail[i] = f+1;
                     break;
-                } else if (f == 0) {
-                    fail[i] = 0;
+                } else if (f == -1) {
+                    fail[i] = -1;
                     break;
                 } else {
                     f = fail[f];
                 }
             }
         }
-        System.out.println(Arrays.toString(fail));
     }
 
     public boolean search(ICharStream stream) {
@@ -52,48 +52,48 @@ public class KMPSearcher {
             } else if (i == 0) {
                 stream.poll();
             } else {
-                i = fail[i-1];
+                i = fail[i-1]+1;
             }
         }
     }
 
     public boolean search(String source) {
         int i = 0;
-        for (int s = 0;;) {
+        for (int pos = 0;;) {
             if (i >= pattern.length) {
                 return true;
             }
-            if (s >= source.length()) {
+            if (pos >= source.length()) {
                 return false;
             }
-            char c = source.charAt(s);
+            char c = source.charAt(pos);
             if (c == pattern[i]) {
                 i ++;
-                s ++;
+                pos ++;
             } else if (i == 0) {
-                s ++;
+                pos ++;
             } else {
-                i = fail[i-1];
+                i = fail[i-1]+1;
             }
         }
     }
 
     public static void main(String[] args) {
-        String p = "abeabc";
-        String s = "abeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabeabc";
+        String p = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
+        String s = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaab";
         KMPSearcher kmp = new KMPSearcher(p);
         System.out.println(kmp.search(s));
-        System.out.println(kmp.search("sadfklhabeabeabsdfdsaf"));
+        System.out.println(kmp.search("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
 
         long begin = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i ++) {
-            kmp.search(s);
+        for (int i = 0; i < 100000; i ++) {
+            Utils.verify(kmp.search(s));
         }
         System.out.println(System.currentTimeMillis() - begin);
 
         begin = System.currentTimeMillis();
-        for (int i = 0; i < 10000; i ++) {
-            s.indexOf(p);
+        for (int i = 0; i < 100000; i ++) {
+            Utils.verify(s.indexOf(p) > 0);
         }
         System.out.println(System.currentTimeMillis() - begin);
     }

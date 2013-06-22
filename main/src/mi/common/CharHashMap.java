@@ -1,10 +1,12 @@
 package mi.common;
 
+import java.util.Iterator;
+
 /**
  * User: goldolphin
  * Time: 2013-06-19 22:10
  */
-public class CharHashMap<T> {
+public class CharHashMap<T> implements Iterable<CharHashMap.Entry<T>> {
     private final double loadFactor;
     private int capacity;
     private int threshold;
@@ -124,15 +126,68 @@ public class CharHashMap<T> {
         }
     }
 
-    private static class Entry<T> {
-        final char key;
-        T value;
-        Entry<T> next;
+    @Override
+    public java.util.Iterator<Entry<T>> iterator() {
+        return new Iterator();
+    }
+
+    public static class Entry<T> {
+        private final char key;
+        private T value;
+        private Entry<T> next;
 
         private Entry(char key, T value) {
             this.key = key;
             this.value = value;
             this.next = null;
+        }
+
+        public char getKey() {
+            return key;
+        }
+
+        public T getValue() {
+            return value;
+        }
+    }
+
+    private class Iterator implements java.util.Iterator<Entry<T>> {
+        private int index = 0;
+        private Entry<T> current = null;
+
+        private Iterator() {
+            for (; index < table.length; index ++) {
+                if (table[index] != null) {
+                    current = table[index];
+                    break;
+                }
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            return current != null;
+        }
+
+        @Override
+        public Entry<T> next() {
+            Entry<T> last = current;
+            current = current.next;
+            if (current == null) {
+                index ++;
+                for (; index < table.length; index ++) {
+                    if (table[index] != null) {
+                        current = table[index];
+                        break;
+                    }
+                }
+            }
+            return last;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
         }
     }
 

@@ -11,4 +11,10 @@ public final class Utils {
         long elapsed = System.currentTimeMillis() - start;
         System.out.println("Time elapsed: " + elapsed + "ms");
     }
+
+    public static void verify(boolean condition) {
+        if (!condition) {
+            throw new RuntimeException();
+        }
+    }
 }
