@@ -7,5 +7,5 @@ import mi.stream.ICharStream;
  * Time: 2013-06-01 14:15
  */
 public interface ICharPattern {
-    boolean match(ICharStream stream, ICharHandler handler);
+    boolean match(ICharStream stream, IContext context);
 }
