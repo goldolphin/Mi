@@ -36,4 +36,8 @@ public class ParserBuilder<T> {
     public IPattern<T> star(IPattern<T> prefix, IPattern<T> pattern, ICombiner<T> combiner) {
         return new Seq<T>(prefix, pattern, combiner);
     }
+
+    public IPattern<T> leftRec(IPattern pattern) {
+        return new LeftRec<T>(pattern);
+    }
 }

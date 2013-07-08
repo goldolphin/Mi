@@ -74,6 +74,10 @@ public enum CharType {
         return c == ' ' || c == '\t';
     }
 
+    public static boolean isBlankChar(char c) {
+        return c == ' ' || c == '\t' || c == '\r' || c == '\n';
+    }
+
     public static void main(String[] args) {
         System.out.println(Character.isISOControl(' '));
     }
