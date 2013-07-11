@@ -6,18 +6,26 @@ import mi.stream.ICharStream;
  * User: goldolphin
  * Time: 2013-07-08 00:19
  */
-public class ParserBuilder<T> {
-    public final ICombiner<T> SELECT_FIRST = new ICombiner<T>() {
+public class ParserBuilder {
+
+    public static final ICombiner SELECT_FIRST = new ICombiner() {
         @Override
-        public T combine(T t1, T t2) {
+        public ISymbol combine(ISymbol t1, ISymbol t2) {
             return t1;
         }
     };
 
-    public final ICombiner<T> SELECT_SECOND = new ICombiner<T>() {
+    public static final ICombiner SELECT_SECOND = new ICombiner() {
         @Override
-        public T combine(T t1, T t2) {
+        public ISymbol combine(ISymbol t1, ISymbol t2) {
             return t2;
+        }
+    };
+
+    public static final ICombiner SELECT_NONE = new ICombiner() {
+        @Override
+        public ISymbol combine(ISymbol t1, ISymbol t2) {
+            return ISymbol.EMPTY;
         }
     };
 
@@ -25,19 +33,19 @@ public class ParserBuilder<T> {
         return new ParseStream(source);
     }
 
-    public IPattern<T> or(IPattern<T> pattern1, IPattern<T> pattern2) {
-        return new Or<T>(pattern1, pattern2);
+    public static IPattern or(IPattern pattern1, IPattern pattern2) {
+        return new OrPattern(pattern1, pattern2);
     }
 
-    public IPattern<T> seq(IPattern<T> pattern1, IPattern<T> pattern2, ICombiner<T> combiner) {
-        return new Seq<T>(pattern1, pattern2, combiner);
+    public static IPattern seq(IPattern pattern1, IPattern pattern2, ICombiner combiner) {
+        return new SeqPattern(pattern1, pattern2, combiner);
     }
 
-    public IPattern<T> star(IPattern<T> prefix, IPattern<T> pattern, ICombiner<T> combiner) {
-        return new Seq<T>(prefix, pattern, combiner);
+    public static IPattern star(IPattern prefix, IPattern pattern, ICombiner combiner) {
+        return new SeqPattern(prefix, pattern, combiner);
     }
 
-    public IPattern<T> leftRec(IPattern pattern) {
-        return new LeftRec<T>(pattern);
+    public static IPattern leftRec(IPattern pattern) {
+        return new LeftRec(pattern);
     }
 }

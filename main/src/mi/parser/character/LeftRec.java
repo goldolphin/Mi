@@ -9,20 +9,20 @@ import java.util.ArrayList;
  * User: goldolphin
  * Time: 2013-07-05 16:29
  */
-class LeftRec<T> implements IPattern<T> {
-    private final IPattern<T> raw;
-    private final ArrayList<PosEntry<T>> posStack;
+class LeftRec implements IPattern {
+    private final IPattern raw;
+    private final ArrayList<PosEntry> posStack;
 
-    public LeftRec(IPattern<T> raw) {
+    public LeftRec(IPattern raw) {
         this.raw = raw;
         posStack = new ArrayList<>();
         posStack.add(new PosEntry(-1));
     }
 
     @Override
-    public T match(IParseStream stream) {
+    public ISymbol match(IParseStream stream) {
         int pos = stream.tell();
-        PosEntry<T> top = posStack.get(posStack.size()-1);
+        PosEntry top = posStack.get(posStack.size()-1);
         if (top.pos > pos) {
             throw new ParseException(String.format("PosStackError: %d > %d", top, pos));
         }
@@ -34,9 +34,9 @@ class LeftRec<T> implements IPattern<T> {
             }
             return top.value;
         }
-        PosEntry<T> newTop = new PosEntry(pos);
+        PosEntry newTop = new PosEntry(pos);
         posStack.add(newTop);
-        T t = raw.match(stream);
+        ISymbol t = raw.match(stream);
         if (newTop.isLeftRec && t != null) {
             LRParseStream lrStream = new LRParseStream(stream);
             while (true) {
@@ -53,10 +53,10 @@ class LeftRec<T> implements IPattern<T> {
         return t;
     }
 
-    private static class PosEntry<T> {
+    private static class PosEntry {
         public final int pos;
         public boolean isLeftRec;
-        public T value;
+        public ISymbol value;
 
         private PosEntry(int pos) {
             this.pos = pos;

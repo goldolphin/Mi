@@ -4,10 +4,10 @@ package mi.parser.character;
  * User: goldolphin
  * Time: 2013-07-07 23:52
  */
-class Star<T> implements IPattern<T> {
-    private final IPattern<T> prefix;
-    private final IPattern<T> pattern;
-    private final ICombiner<T> combiner;
+class StarPattern implements IPattern {
+    private final IPattern prefix;
+    private final IPattern pattern;
+    private final ICombiner combiner;
 
     /**
      *
@@ -15,15 +15,15 @@ class Star<T> implements IPattern<T> {
      * @param pattern
      * @param combiner
      */
-    public Star(IPattern<T> prefix, IPattern<T> pattern, ICombiner<T> combiner) {
+    public StarPattern(IPattern prefix, IPattern pattern, ICombiner combiner) {
         this.prefix = prefix;
         this.pattern = pattern;
         this.combiner = combiner;
     }
 
     @Override
-    public T match(IParseStream stream) {
-        T result = null;
+    public ISymbol match(IParseStream stream) {
+        ISymbol result = null;
         if (prefix != null) {
             result = prefix.match(stream);
             if (result == null) {
@@ -31,11 +31,11 @@ class Star<T> implements IPattern<T> {
             }
         }
         while (true) {
-            T t = pattern.match(stream);
-            if (t == null) {
+            ISymbol s = pattern.match(stream);
+            if (s == null) {
                 return result;
             }
-            result = combiner.combine(result, t);
+            result = combiner.combine(result, s);
         }
     }
 }
