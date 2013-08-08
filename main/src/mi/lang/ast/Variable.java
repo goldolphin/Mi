@@ -6,5 +6,5 @@ package mi.lang.ast;
  */
 public class Variable {
     private Type type;
-
+    private Value value;
 }

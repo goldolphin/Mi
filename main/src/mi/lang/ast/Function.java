@@ -6,5 +6,5 @@ package mi.lang.ast;
  */
 public class Function {
     private Variable[] parameters;
-
+    private Type returnType;
 }

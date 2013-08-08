@@ -33,4 +33,6 @@ public class LexPattern implements IPattern<ISymbol> {
         }
         return null;
     }
+
+    private static void parse
 }

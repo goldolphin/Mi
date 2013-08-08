@@ -5,4 +5,5 @@ package mi.lang.ast;
  * Time: 2013-08-08 02:47
  */
 public class Application {
+    private Function function;
 }
