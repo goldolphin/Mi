@@ -1,4 +1,4 @@
-package mi.parser;
+package mi.legacy.parser;
 
 /**
  * User: goldolphin

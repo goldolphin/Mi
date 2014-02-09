@@ -1,4 +1,4 @@
-package mi.parser.character;
+package mi.legacy.parser.character;
 
 import mi.stream.ICharStream;
 

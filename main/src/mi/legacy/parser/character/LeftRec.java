@@ -1,7 +1,6 @@
-package mi.parser.character;
+package mi.legacy.parser.character;
 
-import mi.common.IntStack;
-import mi.parser.ParseException;
+import mi.legacy.parser.ParseException;
 
 import java.util.ArrayList;
 

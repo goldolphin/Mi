@@ -1,8 +1,8 @@
 package mi.lang.parser;
 
 import mi.common.CharType;
-import mi.parser.character.IParseStream;
-import mi.parser.character.IPattern;
+import mi.legacy.parser.character.IParseStream;
+import mi.legacy.parser.character.IPattern;
 
 /**
  * User: goldolphin
