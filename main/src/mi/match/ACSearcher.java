@@ -1,10 +1,12 @@
 package mi.match;
 
-import com.sun.tools.javac.util.List;
 import mi.common.CharHashMap;
 import mi.common.Utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * User: goldolphin
@@ -111,7 +113,7 @@ public class ACSearcher {
         System.out.println(kmp.search(s));
         System.out.println(kmp.search(e));
 
-        ACSearcher ac = new ACSearcher(List.from(new String[]{p, "ab", "aab"}));
+        ACSearcher ac = new ACSearcher(Arrays.asList(new String[]{p, "ab", "aab"}));
         IMatchHandler handler = new IMatchHandler() {
             @Override
             public void handle(int pos, String pattern) {

@@ -11,8 +11,6 @@ public class Type {
     public Type(Type inType, Type outType) {
         this.inType = inType;
         this.outType = outType;
-        Object.class.
-        getClass().is
     }
 
     public static final Type Byte = new Type(null, null);

@@ -1,16 +1,18 @@
 package mi.lang.parser;
 
 import mi.common.CharType;
+import mi.legacy.parser.pattern.IHandler;
+import mi.legacy.parser.pattern.IPattern;
 import mi.legacy.parser.character.IParseStream;
-import mi.legacy.parser.character.IPattern;
+import mi.stream.IStream;
 
 /**
  * User: goldolphin
  * Time: 2013-07-08 03:22
  */
-public class LexPattern implements IPattern<ISymbol> {
-    @Override
-    public ISymbol match(IParseStream stream) {
+public class LexPattern {
+
+    public boolean match(IParseStream stream, IHandler<ISymbol> handler) {
         while (true) {
             char c = stream.peek();
             if (CharType.isBlankChar(c)) {
@@ -31,8 +33,7 @@ public class LexPattern implements IPattern<ISymbol> {
             }
             break;
         }
-        return null;
+        return false;
     }
 
-    private static void parse
 }

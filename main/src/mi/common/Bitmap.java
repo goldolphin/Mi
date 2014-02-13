@@ -5,23 +5,27 @@ package mi.common;
  * Time: 2013-06-06 22:35
  */
 public class Bitmap {
-    private byte[] bytes;
+    private long[] longs;
 
-    private static final int M = 8;
+    private static final int M = Long.SIZE;
 
+    /**
+     *
+     * @param requestedCapacity in bits
+     */
     public Bitmap(int requestedCapacity) {
-        bytes = new byte[(requestedCapacity+M-1)/M];
+        longs = new long[(requestedCapacity+M-1)/M];
     }
 
     public boolean get(int n) {
-        return (bytes[n/M] & (1 << (n%M))) != 0;
+        return (longs[n/M] & (1 << (n%M))) != 0;
     }
 
     public void set(int n, boolean value) {
         if (value) {
-            bytes[n/M] |= 1 << (n%M);
+            longs[n/M] |= 1 << (n%M);
         } else {
-            bytes[n/M] &= ~(1 << (n%M));
+            longs[n/M] &= ~(1 << (n%M));
         }
     }
 

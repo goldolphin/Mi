@@ -3,13 +3,14 @@ package mi.lang.parser;
 import mi.common.CharType;
 import mi.legacy.parser.character.IParseStream;
 import mi.legacy.parser.character.ParserBuilder;
-import mi.legacy.parser.character.IPattern;
+import mi.legacy.parser.pattern.IPattern;
 
 /**
  * User: goldolphin
  * Time: 2013-07-08 02:31
  */
 public class Parser {
+/*
     private ParserBuilder<ISymbol> builder = new ParserBuilder<>();
 
     IPattern<ISymbol> Id = new IPattern<ISymbol>() {
@@ -52,5 +53,5 @@ public class Parser {
             return new Symbols.Id(buffer.toString());
         }
     };
-
+*/
 }
