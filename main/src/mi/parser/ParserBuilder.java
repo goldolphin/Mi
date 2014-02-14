@@ -1,5 +1,6 @@
 package mi.parser;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -8,40 +9,50 @@ import java.util.HashMap;
  */
 public class ParserBuilder {
 
-    public void build(Grammar grammar) {
+    public Parser build(Grammar grammar) {
         NontermTable nontermTable = new NontermTable();
 
-        State startState = new State();
+        // Construct automation.
+        State.StateGenerator stateGenerator = new State.StateGenerator();
+        State startState = stateGenerator.generate();
         for (Grammar.Production production: grammar.getProductions()) {
             Nonterm head = nontermTable.get(production.head.name());
             State current = startState;
             int len = production.body.length;
             for (int i = 0; i < len; i ++) {
                 Grammar.ISymbol symbol = production.body[i];
-                boolean toAccept = i == len-1;
                 if (symbol instanceof Grammar.Nonterm) {
                     Nonterm n = nontermTable.get(symbol.name());
-                    // For left-most nonterm situation
                     if (i == 0) {
-                        // Self reference
-                        if (i == len-1 && n == head) {
-                            throw new ParseException("Self reference: " + head.name);
-                        }
-
-
-
+                        // For left-most nonterm situation
+                        current = n.addLeftMostRule(head.id, stateGenerator);
+                    } else {
+                        current = current.addNontermRule(n.id, head.id, stateGenerator);
                     }
-                    current = current.addNontermRule(n.Id, head.Id, toAccept);
                 } else if (symbol instanceof Grammar.Term) {
-                    current = current.addTermRule(symbol.name(), head.Id, toAccept);
+                    current = current.addTermRule(symbol.name(), head.id, stateGenerator);
                 } else {
                     throw new ParseException("Unknown symbol type: " + symbol.getClass());
                 }
             }
+
+            // Set accepting state
+            current.setAcceptedNonterm(head.id);
         }
+
+        // Extend rules' head set.
+
+
+        // Build parser.
+        Nonterm[] table = new Nonterm[nontermTable.size()];
+        for (Nonterm n: nontermTable.getAll()) {
+            table[n.id] = n;
+        }
+
+        return new Parser(startState, table);
     }
 
-    public static class NontermTable {
+    private static class NontermTable {
         private HashMap<String, Nonterm> map = new HashMap<>();
         private int currentId = 0;
 
@@ -53,5 +64,14 @@ public class ParserBuilder {
             }
             return n;
         }
+
+        public Collection<Nonterm> getAll() {
+            return map.values();
+        }
+
+        public int size() {
+            return map.size();
+        }
     }
+
 }

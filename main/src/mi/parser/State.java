@@ -2,7 +2,6 @@ package mi.parser;
 
 import mi.common.CharHashMap;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -12,9 +11,14 @@ import java.util.HashSet;
  */
 public class State {
     public static final int ANY = -1;
+    public final int id;
     private CharHashMap<TermRule> termRules = new CharHashMap<>();
     private HashMap<Integer, NontermRule> nontermRules = new HashMap<>();
     private int acceptedNontermId = ANY;
+
+    private State(int id) {
+        this.id = id;
+    }
 
     public void setAcceptedNonterm(int nontermId) {
         if (hasAcceptedNonterm()) {
@@ -35,40 +39,37 @@ public class State {
         return null;
     }
 
-    public State addTermRule(char t, int headNontermId, boolean toAccept) {
+    public State addTermRule(char t, int headNontermId, StateGenerator generator) {
         TermRule rule = termRules.get(t);
         if (rule == null) {
-            rule = new TermRule(t, new State());
+            rule = new TermRule(t, generator.generate());
             termRules.put(t, rule);
         }
         rule.addHeadNonterm(headNontermId);
-        if (toAccept) {
-            rule.target.setAcceptedNonterm(headNontermId);
-        }
         return rule.target;
     }
 
-    public State addTermRule(String t, int headNontermId, boolean toAccept) {
+    public State addTermRule(String t, int headNontermId, StateGenerator generator) {
         int len = t.length();
         State current = this;
         for (int i = 0; i < len; i ++) {
-            toAccept = toAccept && i == len-1;
-            current = current.addTermRule(t.charAt(i), headNontermId, toAccept);
+            current = current.addTermRule(t.charAt(i), headNontermId, generator);
         }
         return current;
     }
 
-    public State addNontermRule(int nontermId, int headNontermId, boolean toAccept) {
+    public State addNontermRule(int nontermId, int headNontermId, StateGenerator generator) {
         NontermRule rule = nontermRules.get(nontermId);
         if (rule == null) {
-            rule = new NontermRule(nontermId, new State());
+            rule = new NontermRule(nontermId, generator.generate());
             nontermRules.put(nontermId, rule);
         }
         rule.addHeadNonterm(headNontermId);
-        if (toAccept) {
-            rule.target.setAcceptedNonterm(headNontermId);
-        }
         return rule.target;
+    }
+
+    public void extendRuleHeads() {
+
     }
 
     public static abstract class AbstractRule {
@@ -103,6 +104,14 @@ public class State {
         public TermRule(char term, State target) {
             super(target);
             this.term = term;
+        }
+    }
+
+    public static class StateGenerator {
+        private int currentId = 0;
+
+        public State generate() {
+            return new State(currentId ++);
         }
     }
 }
