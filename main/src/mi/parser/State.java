@@ -2,19 +2,20 @@ package mi.parser;
 
 import mi.common.CharHashMap;
 
+import javax.xml.transform.Source;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 
 /**
  * User: goldolphin
  * Time: 2014-02-09 20:25
  */
 public class State {
-    public static final int ANY = -1;
     public final int id;
-    private CharHashMap<TermRule> termRules = new CharHashMap<>();
-    private HashMap<Integer, NontermRule> nontermRules = new HashMap<>();
-    private int acceptedNontermId = ANY;
+    private int acceptedNontermId = Nonterm.ANY;
+    private CharHashMap<Transition.TermTransition> termTransitions = new CharHashMap<>();
+    private HashMap<Integer, Transition.NontermTransition> nontermTransitions = new HashMap<>();
 
     private State(int id) {
         this.id = id;
@@ -28,90 +29,83 @@ public class State {
     }
     
     public boolean hasAcceptedNonterm() {
-        return acceptedNontermId != ANY;
+        return acceptedNontermId != Nonterm.ANY;
     }
-    
-    public State getTermRule(char c, int headNontermId) {
-        TermRule termRule = termRules.get(c);
-        if (termRule != null && termRule.containsHeadNonterm(headNontermId)) {
-            return termRule.target;
+
+    public int getAcceptedNontermId() {
+        return acceptedNontermId;
+    }
+
+    public State getTermTransition(char c, int headNontermId) {
+        Transition.TermTransition transition = termTransitions.get(c);
+        if (transition != null && transition.containsHeadNonterm(headNontermId)) {
+            return transition.target;
         }
         return null;
     }
 
-    public State addTermRule(char t, int headNontermId, StateGenerator generator) {
-        TermRule rule = termRules.get(t);
-        if (rule == null) {
-            rule = new TermRule(t, generator.generate());
-            termRules.put(t, rule);
+    public State addTermTransition(char t, int headNontermId, StateGenerator generator) {
+        Transition.TermTransition transition = termTransitions.get(t);
+        if (transition == null) {
+            transition = new Transition.TermTransition(t, generator.generate());
+            termTransitions.put(t, transition);
         }
-        rule.addHeadNonterm(headNontermId);
-        return rule.target;
+        transition.addHeadNonterm(headNontermId);
+        return transition.target;
     }
 
-    public State addTermRule(String t, int headNontermId, StateGenerator generator) {
+    public State addTermTransition(String t, int headNontermId, StateGenerator generator) {
         int len = t.length();
         State current = this;
         for (int i = 0; i < len; i ++) {
-            current = current.addTermRule(t.charAt(i), headNontermId, generator);
+            current = current.addTermTransition(t.charAt(i), headNontermId, generator);
         }
         return current;
     }
 
-    public State addNontermRule(int nontermId, int headNontermId, StateGenerator generator) {
-        NontermRule rule = nontermRules.get(nontermId);
-        if (rule == null) {
-            rule = new NontermRule(nontermId, generator.generate());
-            nontermRules.put(nontermId, rule);
+    public State addNontermTransition(int nontermId, int headNontermId, StateGenerator generator) {
+        Transition.NontermTransition transition = nontermTransitions.get(nontermId);
+        if (transition == null) {
+            transition = new Transition.NontermTransition(nontermId, generator.generate());
+            nontermTransitions.put(nontermId, transition);
         }
-        rule.addHeadNonterm(headNontermId);
-        return rule.target;
+        transition.addHeadNonterm(headNontermId);
+        return transition.target;
     }
 
-    public void extendRuleHeads() {
-
+    CharHashMap<Transition.TermTransition> getTermTransitions() {
+        return termTransitions;
     }
 
-    public static abstract class AbstractRule {
-        public final State target;
-        private HashSet<Integer> headNontermIds = new HashSet<>();
-
-        protected AbstractRule(State target) {
-            this.target = target;
-        }
-
-        public void addHeadNonterm(int nontermId) {
-            headNontermIds.add(nontermId);
-        }
-
-        public boolean containsHeadNonterm(int nontermId) {
-            return nontermId == ANY || headNontermIds.contains(nontermId);
-        }
+    Collection<Transition.NontermTransition> getNontermTransitions() {
+        return nontermTransitions.values();
     }
 
-    public static class NontermRule extends AbstractRule {
-        public final int nontermId;
-
-        public NontermRule(int nontermId, State target) {
-            super(target);
-            this.nontermId = nontermId;
+    @Override
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        buffer.append("{").append(id).append(", ").append(acceptedNontermId).append("\n");
+        for (Transition t: getNontermTransitions()) {
+            buffer.append(t).append("\n");
         }
-    }
-
-    public static class TermRule extends AbstractRule {
-        public final char term;
-
-        public TermRule(char term, State target) {
-            super(target);
-            this.term = term;
+        for (CharHashMap.Entry<Transition.TermTransition> e: getTermTransitions()) {
+            buffer.append(e.getValue()).append("\n");
         }
+        buffer.append("}");
+        return buffer.toString();
     }
 
     public static class StateGenerator {
-        private int currentId = 0;
+        private ArrayList<State> list = new ArrayList<>();
 
         public State generate() {
-            return new State(currentId ++);
+            State s = new State(list.size());
+            list.add(s);
+            return s;
+        }
+
+        public ArrayList<State> getAll() {
+            return list;
         }
     }
 }

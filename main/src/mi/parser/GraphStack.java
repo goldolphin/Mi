@@ -24,4 +24,8 @@ public class GraphStack<T> {
     public T getData() {
         return data;
     }
+
+    public static <T> GraphStack<T> newBottom(T data) {
+        return new GraphStack<>(null, data);
+    }
 }
