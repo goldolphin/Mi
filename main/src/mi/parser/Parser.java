@@ -5,7 +5,7 @@ import mi.stream.ICharStream;
 import java.util.ArrayList;
 
 /**
- * @author caofuxiang
+ * @author goldolphin
  *         2014-02-13 20:30
  */
 public class Parser {

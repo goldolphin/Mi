@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 
 /**
- * @author caofuxiang
+ * @author goldolphin
  *         2014-02-13 19:15
  */
 public class ParserBuilder {

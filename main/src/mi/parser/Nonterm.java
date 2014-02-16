@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
- * @author caofuxiang
+ * @author goldolphin
  *         2014-02-13 20:21
  */
 public class Nonterm {

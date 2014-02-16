@@ -1,7 +1,7 @@
 package mi.parser;
 
 /**
- * @author caofuxiang
+ * @author goldolphin
  *         2014-02-13 16:12
  */
 public class ParseException extends RuntimeException {

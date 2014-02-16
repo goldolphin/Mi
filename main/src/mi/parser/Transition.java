@@ -31,6 +31,10 @@ public abstract class Transition {
         return String.format("(%d, %s)", target.id, headNontermIds.toString());
     }
 
+    public static interface ToAccept {
+        public boolean accept(char term);
+    }
+
     public static class NontermTransition extends Transition {
         public final int nontermId;
 
@@ -43,6 +47,21 @@ public abstract class Transition {
         public String toString() {
             return String.format("(N: %d, %s)", nontermId, super.toString());
         }
+    }
+
+    public static class CustomizedTransition extends Transition {
+        private final ToAccept toAccept;
+
+        public CustomizedTransition(ToAccept toAccept, State target) {
+            super(target);
+            this.toAccept = toAccept;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("(C: %s, %s)", toAccept, super.toString());
+        }
+
     }
 
     public static class TermTransition extends Transition {

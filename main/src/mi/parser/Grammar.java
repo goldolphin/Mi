@@ -3,7 +3,7 @@ package mi.parser;
 import java.util.ArrayList;
 
 /**
- * @author caofuxiang
+ * @author goldolphin
  *         2014-02-13 19:24
  */
 public abstract class Grammar {
