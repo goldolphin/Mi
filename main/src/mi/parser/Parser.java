@@ -1,6 +1,7 @@
 package mi.parser;
 
 import mi.stream.ICharStream;
+import mi.stream.StringStream;
 
 import java.util.ArrayList;
 
@@ -29,6 +30,7 @@ public class Parser {
                 new Transition.NontermTransition(Nonterm.ANY, null)));
 
         while (true) {
+            System.out.format("subParsers = %d, toConsume = %d, success = %d\n", subParsers.size(), toConsume.size(), success.size());
             if (subParsers.size() == 0) {
                 // Transitions need consuming input
                 int num = toConsume.size();
@@ -50,11 +52,11 @@ public class Parser {
                         subParsers.add(next, stack);
                     }
                 }
+                toConsume.clear();
             }
 
             // Transitions without consuming input
             backup.clear();
-            toConsume.clear();
 
             int num = subParsers.size();
             for (int i = 0; i < num; i++) {
@@ -92,7 +94,9 @@ public class Parser {
                 }
 
                 // Add to toConsume
-                toConsume.add(state, stack);
+                if (state.canConsume()) {
+                    toConsume.add(state, stack);
+                }
             }
 
             // Swap subParsers & backup

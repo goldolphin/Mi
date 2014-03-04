@@ -35,6 +35,10 @@ public class State {
         return acceptedNontermId;
     }
 
+    public boolean canConsume() {
+        return termTransitions.size() > 0;
+    }
+
     public State getTermTransition(char c, int headNontermId) {
         Transition.TermTransition transition = termTransitions.get(c);
         if (transition != null && transition.containsHeadNonterm(headNontermId)) {

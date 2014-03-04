@@ -9,6 +9,7 @@ public class StringStream implements ICharStream {
     private int pos;
 
     public StringStream(String source) {
+        System.out.println("StringStream: " + source);
         this.source = source;
         pos = 0;
     }
