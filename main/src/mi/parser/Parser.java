@@ -31,32 +31,23 @@ public class Parser {
 
         while (true) {
             System.out.format("subParsers = %d, toConsume = %d, success = %d\n", subParsers.size(), toConsume.size(), success.size());
+
             if (subParsers.size() == 0) {
                 // Transitions need consuming input
-                int num = toConsume.size();
-                if (num == 0) {
+                if (toConsume.size() == 0) {
                     break;
                 }
 
-                char c = stream.poll();
-                if (c == stream.EOF) {
-                    break;
-                }
-                for (int i = 0; i < num; i++) {
-                    State state = toConsume.getState(i);
-                    GraphStack<Transition.NontermTransition> stack = toConsume.getStack(i);
-                    Transition.NontermTransition stackTop = stack.getData();
-                    int head = useHeadSet ? stackTop.nontermId : Nonterm.ANY;
-                    State next = state.getTermTransition(c, head);
-                    if (next != null) {
-                        subParsers.add(next, stack);
-                    }
-                }
-                toConsume.clear();
+                stream.poll();
+
+                // Swap subParsers & toConsume
+                SubParsers temp = subParsers;
+                subParsers = toConsume;
+                toConsume = temp;
             }
 
-            // Transitions without consuming input
             backup.clear();
+            char c = stream.peek();
 
             int num = subParsers.size();
             for (int i = 0; i < num; i++) {
@@ -78,7 +69,7 @@ public class Parser {
                     // Accepting transition
                     if (head == Nonterm.ANY || head == accepted.id) {
                         if (stackTop.target == null) {
-                            if (stream.peek() == stream.EOF) {
+                            if (c == stream.EOF) {
                                 success.add(stackTop.target, stack.pop());
                             }
                         } else {
@@ -88,14 +79,16 @@ public class Parser {
 
                     // Leftmost transitions
                     Transition.NontermTransition leftmostTransition = accepted.getLeftMostTransition();
-                    if (leftmostTransition != null && leftmostTransition.containsHeadNonterm(head)) {
+                    if (leftmostTransition.containsHeadNonterm(head)) {
                         backup.add(leftmostTransition.target, stack);
                     }
                 }
 
-                // Add to toConsume
-                if (state.canConsume()) {
-                    toConsume.add(state, stack);
+                // Transitions need consuming input
+                State next = state.getTermTransition(c, head);
+                if (next != null) {
+                    // Add to toConsume
+                    toConsume.add(next, stack);
                 }
             }
 
@@ -105,10 +98,7 @@ public class Parser {
             backup = temp;
         }
 
-        if (stream.peek() == stream.EOF && success.size() > 0) {
-            return true;
-        }
-        return false;
+        return success.size() > 0;
     }
 
     private static class SubParsers {

@@ -19,7 +19,7 @@ public abstract class Transition {
     }
 
     public boolean containsHeadNonterm(int nontermId) {
-        return nontermId == Nonterm.ANY || headNontermIds.contains(nontermId);
+        return target != null && (nontermId == Nonterm.ANY || headNontermIds.contains(nontermId));
     }
 
     public HashSet<Integer> getHeadNontermIds() {

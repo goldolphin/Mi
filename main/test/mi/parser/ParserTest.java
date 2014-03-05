@@ -46,4 +46,18 @@ public class ParserTest {
         Assert.assertFalse(parser.parse(new StringStream("cdcdzababefefe")));
     }
 
+    @org.junit.Test
+    public void testParse3() throws Exception {
+        ParserBuilder parserBuilder = new ParserBuilder();
+        Parser parser = parserBuilder.build(new Grammar() {
+            @Override
+            protected void define() {
+                addProduction(N("A"), T("a"), T("b"));
+                addProduction(N("A"), T("a"), N("B"));
+                addProduction(N("B"), T("b"), T("c"));
+            }
+        }, true);
+        Assert.assertTrue(parser.parse(new StringStream("ab"))); // A
+        Assert.assertTrue(parser.parse(new StringStream("abc"))); // A
+    }
 }
