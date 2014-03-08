@@ -14,8 +14,9 @@ public class ParserTest {
         ParserBuilder parserBuilder = new ParserBuilder();
         Parser parser = parserBuilder.build(new Grammar() {
             @Override
-            protected void define() {
+            protected Nonterm define() {
                 addProduction(N("A"), T("abcde"));
+                return null;
             }
         }, false);
         Assert.assertTrue(parser.parse(new StringStream("abcde")));
@@ -30,11 +31,12 @@ public class ParserTest {
         ParserBuilder parserBuilder = new ParserBuilder();
         Parser parser = parserBuilder.build(new Grammar() {
             @Override
-            protected void define() {
+            protected Nonterm define() {
                 addProduction(N("A"), N("B"), T("b"));
                 addProduction(N("B"), N("A"), T("a"));
                 addProduction(N("A"), T("z"));
                 addProduction(N("A"), T("cd"), N("A"), T("ef"));
+                return null;
             }
         }, true);
         Assert.assertTrue(parser.parse(new StringStream("z"))); // A
@@ -51,13 +53,54 @@ public class ParserTest {
         ParserBuilder parserBuilder = new ParserBuilder();
         Parser parser = parserBuilder.build(new Grammar() {
             @Override
-            protected void define() {
+            protected Nonterm define() {
                 addProduction(N("A"), T("a"), T("b"));
                 addProduction(N("A"), T("a"), N("B"));
                 addProduction(N("B"), T("b"), T("c"));
+                return null;
             }
         }, true);
         Assert.assertTrue(parser.parse(new StringStream("ab"))); // A
         Assert.assertTrue(parser.parse(new StringStream("abc"))); // A
+    }
+
+    @org.junit.Test
+    public void testParse4() throws Exception {
+        ParserBuilder parserBuilder = new ParserBuilder();
+        Parser parser = parserBuilder.build(new Grammar() {
+            @Override
+            protected Nonterm define() {
+                addProduction(N("Equal"), N("Equal"), T("=="), N("Rel"));
+                addProduction(N("Equal"), N("Equal"), T("!="), N("Rel"));
+                addProduction(N("Equal"), N("Rel"));
+
+                addProduction(N("Rel"), N("Rel"), T("<"), N("Shift"));
+                addProduction(N("Rel"), N("Rel"), T(">"), N("Shift"));
+                addProduction(N("Rel"), N("Rel"), T("<="), N("Shift"));
+                addProduction(N("Rel"), N("Rel"), T(">="), N("Shift"));
+                addProduction(N("Rel"), N("Shift"));
+
+                addProduction(N("Shift"), N("Shift"), T("<<"), N("Add"));
+                addProduction(N("Shift"), N("Shift"), T(">>"), N("Add"));
+                addProduction(N("Shift"), N("Shift"), T(">>>"), N("Add"));
+                addProduction(N("Shift"), N("Add"));
+
+                addProduction(N("Add"), N("Add"), T("+"), N("Mul"));
+                addProduction(N("Add"), N("Add"), T("-"), N("Mul"));
+                addProduction(N("Add"), N("Mul"));
+
+                addProduction(N("Mul"), N("Mul"), T("*"), N("Unary"));
+                addProduction(N("Mul"), N("Mul"), T("/"), N("Unary"));
+                addProduction(N("Mul"), N("Mul"), T("%"), N("Unary"));
+                addProduction(N("Mul"), N("Unary"));
+
+                addProduction(N("Unary"), T("u"));
+                addProduction(N("Unary"), T("("), N("Equal"), T(")"));
+                //return N("Equal");
+                return null;
+            }
+        }, true);
+        //Assert.assertTrue(parser.parse(new StringStream("u/u")));
+        Assert.assertTrue(parser.parse(new StringStream("u<=u==u*(u+u)/u<<u")));
     }
 }

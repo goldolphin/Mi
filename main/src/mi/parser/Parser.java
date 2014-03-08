@@ -1,7 +1,6 @@
 package mi.parser;
 
 import mi.stream.ICharStream;
-import mi.stream.StringStream;
 
 import java.util.ArrayList;
 
@@ -10,13 +9,15 @@ import java.util.ArrayList;
  *         2014-02-13 20:30
  */
 public class Parser {
-    private final State startState;
     private final Nonterm[] nontermTable;
+    private final State startState;
+    private final int topHeadId;
     private final boolean useHeadSet;
 
-    Parser(State startState, Nonterm[] nontermTable, boolean useHeadSet) {
-        this.startState = startState;
+    Parser(Nonterm[] nontermTable, State startState, int topHeadId, boolean useHeadSet) {
         this.nontermTable = nontermTable;
+        this.startState = startState;
+        this.topHeadId = topHeadId;
         this.useHeadSet = useHeadSet;
     }
 
@@ -27,7 +28,7 @@ public class Parser {
         SubParsers success = new SubParsers();
 
         subParsers.add(startState, GraphStack.<Transition.NontermTransition>newBottom(
-                new Transition.NontermTransition(Nonterm.ANY, null)));
+                new Transition.NontermTransition(topHeadId, null)));
 
         while (true) {
             System.out.format("subParsers = %d, toConsume = %d, success = %d\n", subParsers.size(), toConsume.size(), success.size());
@@ -67,7 +68,7 @@ public class Parser {
                 if (state.hasAcceptedNonterm()) {
                     Nonterm accepted = nontermTable[state.getAcceptedNontermId()];
                     // Accepting transition
-                    if (head == Nonterm.ANY || head == accepted.id) {
+                    if (stackTop.nontermId == Nonterm.ANY || stackTop.nontermId == accepted.id) {
                         if (stackTop.target == null) {
                             if (c == stream.EOF) {
                                 success.add(stackTop.target, stack.pop());

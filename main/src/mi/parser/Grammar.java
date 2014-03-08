@@ -8,9 +8,10 @@ import java.util.ArrayList;
  */
 public abstract class Grammar {
     private ArrayList<Production> productions = new ArrayList<>();
+    private final Nonterm topHead;
 
     public Grammar() {
-        define();
+        topHead = define();
     }
 
     protected Nonterm N(String name) {
@@ -29,7 +30,15 @@ public abstract class Grammar {
         return productions;
     }
 
-    protected abstract void define();
+    public Nonterm getTopHead() {
+        return topHead;
+    }
+
+    /**
+     * Define the grammar: BNF rules.
+     * @return top head nonterm(the top nonterm to be accepted for the whole input).
+     */
+    protected abstract Nonterm define();
 
     public static class Production {
         public final Nonterm head;

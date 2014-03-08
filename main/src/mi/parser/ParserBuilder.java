@@ -47,13 +47,17 @@ public class ParserBuilder {
             extendTransitionHeadSet(stateGenerator, nontermTable);
         }
 
+        // Top head
+        Grammar.Nonterm topHead = grammar.getTopHead();
+        int topHeadId = topHead == null ? Nonterm.ANY : nontermTable.get(topHead.name()).id;
+
         // Build parser.
         Nonterm[] table = new Nonterm[nontermTable.size()];
         for (Nonterm n: nontermTable.getAll()) {
             table[n.id] = n;
         }
 
-        return new Parser(startState, table, useHeadSet);
+        return new Parser(table, startState, topHeadId, useHeadSet);
     }
 
     private static void dump(State.StateGenerator stateGenerator, NontermTable nontermTable) {
