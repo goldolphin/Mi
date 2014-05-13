@@ -7,4 +7,5 @@ package mi.stack;
 public interface IStack<T> {
     public T pop();
     public void push(T data);
+    public boolean isEmpty();
 }

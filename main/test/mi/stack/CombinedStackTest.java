@@ -1,0 +1,67 @@
+package mi.stack;
+
+import org.junit.Assert;
+import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+/**
+ * @author caofuxiang
+ *         2014-05-13 17:26
+ */
+public class CombinedStackTest {
+
+    @Test
+    public void testPopPush() throws Exception {
+        int num = 10000;
+        int capacity = num * 10;
+        Random random = new Random();
+
+        ArrayList<Integer> expected = new ArrayList<>();
+        ArrayStack<Integer> arrayStack = new ArrayStack<>(capacity);
+
+        for (int i = 0; i < num; i ++) {
+            int data = random.nextInt();
+            expected.add(data);
+            arrayStack.push(data);
+        }
+
+        int num1 = num/2;
+        for (int i = 0; i < num1; i ++) {
+            Assert.assertEquals(expected.remove(expected.size()-1), arrayStack.pop());
+        }
+
+        CombinedStack combinedStack1 = new CombinedStack(capacity, arrayStack);
+        CombinedStack combinedStack2 = new CombinedStack(capacity, arrayStack);
+
+        int num2 = num;
+        for (int i = 0; i < num2; i ++) {
+            int data = random.nextInt();
+            expected.add(data);
+            combinedStack1.push(data);
+            combinedStack2.push(data);
+        }
+
+        int num3 = num/2;
+        for (int i = 0; i < num3; i ++) {
+            Integer e = expected.remove(expected.size() - 1);
+            Assert.assertEquals(e, combinedStack1.pop());
+            Assert.assertEquals(e, combinedStack2.pop());
+        }
+
+        CombinedStack combinedStack3 = combinedStack1.fork();
+        int num4 = expected.size();
+        for (int i = 0; i < num4; i ++) {
+            Integer e = expected.remove(expected.size() - 1);
+            Assert.assertEquals(e, combinedStack1.pop());
+            Assert.assertEquals(e, combinedStack2.pop());
+            Assert.assertEquals(e, combinedStack3.pop());
+        }
+
+        Assert.assertTrue(combinedStack1.isEmpty());
+        Assert.assertTrue(combinedStack2.isEmpty());
+        Assert.assertTrue(combinedStack3.isEmpty());
+        Assert.assertEquals(num-num1, arrayStack.size());
+    }
+}

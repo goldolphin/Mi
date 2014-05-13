@@ -6,6 +6,5 @@ package mi.stack;
  */
 public interface IRandomAccessStack<T> extends IStack<T> {
     public T get(int index);
-
     public int size();
 }

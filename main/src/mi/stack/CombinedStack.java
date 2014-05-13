@@ -38,4 +38,9 @@ public class CombinedStack<T> implements IStack<T>, Forkable<CombinedStack<T>> {
     public void push(T data) {
         buffer.push(data);
     }
+
+    @Override
+    public boolean isEmpty() {
+        return buffer.isEmpty() && underlyingTop < 0;
+    }
 }
