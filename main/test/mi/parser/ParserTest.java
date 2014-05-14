@@ -96,11 +96,11 @@ public class ParserTest {
 
                 addProduction(N("Unary"), T("u"));
                 addProduction(N("Unary"), T("("), N("Equal"), T(")"));
-                //return N("Equal");
-                return null;
+                return N("Equal");
+                //return null;
             }
         }, true);
         //Assert.assertTrue(parser.parse(new StringStream("u/u")));
-        Assert.assertTrue(parser.parse(new StringStream("u<=u==u*(u+u)/u<<u")));
+        Assert.assertTrue(parser.parse(new StringStream("u-u<=u*(u+u)/u%u")));
     }
 }

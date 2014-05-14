@@ -4,7 +4,7 @@ package mi.stack;
  * @author goldolphin
  *         2014-05-12 23:34
  */
-public class ForkableStack<T> implements IStack<T>, Forkable<ForkableStack<T>> {
+public class ForkableStack<T> implements IForkableStack<T> {
     private final ArrayStack<Entry<T>> buffer;
     private int top;
 
