@@ -4,16 +4,16 @@ package mi.stack;
  * @author goldolphin
  *         2014-05-12 23:34
  */
-public class ForkableStack<T> implements IForkableStack<T> {
+public class ArrayForkableStack<T> implements IForkableStack<T> {
     private final ArrayStack<Entry<T>> buffer;
     private int top;
 
-    private ForkableStack(ArrayStack<Entry<T>> buffer, int top) {
+    private ArrayForkableStack(ArrayStack<Entry<T>> buffer, int top) {
         this.buffer = buffer;
         this.top = top;
     }
 
-    public ForkableStack(int capacity) {
+    public ArrayForkableStack(int capacity) {
         this(new ArrayStack<Entry<T>>(capacity), -1);
     }
 
@@ -30,8 +30,8 @@ public class ForkableStack<T> implements IForkableStack<T> {
         top = buffer.size()-1;
     }
 
-    public ForkableStack<T> fork() {
-        return new ForkableStack<>(buffer, top);
+    public ArrayForkableStack<T> fork() {
+        return new ArrayForkableStack<>(buffer, top);
     }
 
     public boolean isEmpty() {

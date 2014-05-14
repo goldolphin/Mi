@@ -5,18 +5,18 @@ package mi.stack;
  *         2014-05-13 00:11
  */
 public class CombinedStack<T> implements IForkableStack<T> {
-    private final ForkableStack<T> buffer;
+    private final IForkableStack<T> buffer;
     private final IRandomAccessStack<T> underlying;
     private int underlyingTop;
 
-    private CombinedStack(ForkableStack<T> buffer, IRandomAccessStack<T> underlying, int underlyingTop) {
+    private CombinedStack(IForkableStack<T> buffer, IRandomAccessStack<T> underlying, int underlyingTop) {
         this.buffer = buffer;
         this.underlying = underlying;
         this.underlyingTop = underlyingTop;
     }
 
     public CombinedStack(int capacity, IRandomAccessStack<T> underlying) {
-        this(new ForkableStack<T>(capacity), underlying, underlying.size()-1);
+        this(new ArrayForkableStack<T>(capacity), underlying, underlying.size()-1);
     }
 
     @Override
