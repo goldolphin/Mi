@@ -36,8 +36,8 @@ public class CombinedStackTest {
             Assert.assertEquals(e, linkedStack.pop());
         }
 
-        CombinedStack<Integer> combinedStack1 = new CombinedStack<>(capacity, arrayStack);
-        CombinedStack<Integer> combinedStack2 = new CombinedStack<>(capacity, arrayStack);
+        CombinedStack<Integer> combinedStack1 = new CombinedStack<>(new ArrayForkableStack<Integer>(capacity), arrayStack);
+        CombinedStack<Integer> combinedStack2 = new CombinedStack<>(new LinkedStack<Integer>(), arrayStack);
         LinkedStack<Integer> linkedStack1 = linkedStack.fork();
 
         int num2 = num;
@@ -75,7 +75,7 @@ public class CombinedStackTest {
         Assert.assertTrue(combinedStack1.isEmpty());
         Assert.assertTrue(combinedStack2.isEmpty());
         Assert.assertTrue(combinedStack3.isEmpty());
-        Assert.assertEquals(num-num1, arrayStack.size());
+        Assert.assertEquals(num - num1, arrayStack.size());
         Assert.assertTrue(linkedStack.isEmpty());
         Assert.assertTrue(linkedStack1.isEmpty());
         Assert.assertTrue(linkedStack2.isEmpty());

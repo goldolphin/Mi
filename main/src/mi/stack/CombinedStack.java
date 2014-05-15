@@ -15,8 +15,8 @@ public class CombinedStack<T> implements IForkableStack<T> {
         this.underlyingTop = underlyingTop;
     }
 
-    public CombinedStack(int capacity, IRandomAccessStack<T> underlying) {
-        this(new ArrayForkableStack<T>(capacity), underlying, underlying.size()-1);
+    public CombinedStack(IForkableStack<T> buffer, IRandomAccessStack<T> underlying) {
+        this(buffer, underlying, underlying.size()-1);
     }
 
     @Override
@@ -41,6 +41,6 @@ public class CombinedStack<T> implements IForkableStack<T> {
 
     @Override
     public boolean isEmpty() {
-        return buffer.isEmpty() && underlyingTop < 0;
+        return buffer.isEmpty() && underlyingTop == -1;
     }
 }

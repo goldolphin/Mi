@@ -42,6 +42,12 @@ public class ArrayStack<T> implements IRandomAccessStack<T> {
         return size == 0;
     }
 
+    public void clear() {
+        while (!isEmpty()) {
+            pop();
+        }
+    }
+
     private void rangeCheck(int index) {
         if (index >= size) {
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
