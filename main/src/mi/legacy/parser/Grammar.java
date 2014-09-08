@@ -1,4 +1,4 @@
-package mi.parser;
+package mi.legacy.parser;
 
 import java.util.ArrayList;
 

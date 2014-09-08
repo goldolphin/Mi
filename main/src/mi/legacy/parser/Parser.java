@@ -1,4 +1,4 @@
-package mi.parser;
+package mi.legacy.parser;
 
 import mi.stream.ICharStream;
 
@@ -31,15 +31,15 @@ public class Parser {
                 new Transition.NontermTransition(topHeadId, null)));
 
         while (true) {
-            System.out.format("subParsers = %d, toConsume = %d, success = %d\n", subParsers.size(), toConsume.size(), success.size());
-
             if (subParsers.size() == 0) {
+                System.out.format("subParsers = %d, toConsume = %d, success = %d\n", subParsers.size(), toConsume.size(), success.size());
+
                 // Transitions need consuming input
                 if (toConsume.size() == 0) {
                     break;
                 }
 
-                stream.poll();
+                System.out.println(stream.poll());
 
                 // Swap subParsers & toConsume
                 SubParsers temp = subParsers;
@@ -74,6 +74,7 @@ public class Parser {
                                 success.add(stackTop.target, stack.pop());
                             }
                         } else {
+                            //System.out.format("[RPOP] %s @ %s\n", accepted.name, nontermTable[stackTop.nontermId].name);
                             backup.add(stackTop.target, stack.pop());
                         }
                     }
@@ -81,6 +82,8 @@ public class Parser {
                     // Leftmost transitions
                     Transition.NontermTransition leftmostTransition = accepted.getLeftMostTransition();
                     if (leftmostTransition.containsHeadNonterm(head)) {
+                        //System.out.println(leftmostTransition.getHeadNontermIds());
+                        //System.out.format("[LPOP] %s @ %s\n", accepted.name, nontermTable[stackTop.nontermId].name);
                         backup.add(leftmostTransition.target, stack);
                     }
                 }

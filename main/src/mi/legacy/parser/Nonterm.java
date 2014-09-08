@@ -1,7 +1,4 @@
-package mi.parser;
-
-import java.util.ArrayList;
-import java.util.HashSet;
+package mi.legacy.parser;
 
 /**
  * @author goldolphin

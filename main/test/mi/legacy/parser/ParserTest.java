@@ -1,4 +1,4 @@
-package mi.parser;
+package mi.legacy.parser;
 
 import mi.stream.StringStream;
 import org.junit.Assert;
