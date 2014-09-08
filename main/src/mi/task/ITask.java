@@ -6,19 +6,23 @@ package mi.task;
  *         2014-09-05 22:46
  */
 public interface ITask<TResult> {
+    /**
+     * Get result of the task.
+     * @return
+     */
     public TResult getResult();
 
     /**
-     * Make a plan for this task.
-     * @param cont
-     * @param scheduler
-     */
-    public void plan(IContinuation cont, IScheduler scheduler);
-
-    /**
-     * Execute the task itself.
+     * Execute the task with specified continuation.
      * @param cont
      * @param scheduler
      */
     public void execute(IContinuation cont, IScheduler scheduler);
+
+    /**
+     * Actions when the task is executed. Continuation should be applied usually.
+     * @param cont
+     * @param scheduler
+     */
+    public void onExecute(IContinuation cont, IScheduler scheduler);
 }

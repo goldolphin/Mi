@@ -21,10 +21,10 @@ public class WhenAllTask extends Task<WhenAllTask> {
     }
 
     @Override
-    public void plan(IContinuation cont, IScheduler scheduler) {
+    public void execute(IContinuation cont, IScheduler scheduler) {
         Continuation newCont = new Continuation(cont, this);
         for (ITask<?> task: tasks) {
-            task.plan(newCont, scheduler);
+            task.execute(newCont, scheduler);
         }
     }
 

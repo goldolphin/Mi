@@ -12,8 +12,8 @@ public abstract class SeqTask<AResult, TResult> extends Task<TResult> {
     }
 
     @Override
-    public void plan(IContinuation cont, IScheduler scheduler) {
-        antecedent.plan(new Continuation(cont, this), scheduler);
+    public void execute(IContinuation cont, IScheduler scheduler) {
+        antecedent.execute(new Continuation(cont, this), scheduler);
     }
 
     public static class Continuation implements IContinuation {

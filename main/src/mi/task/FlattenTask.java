@@ -12,8 +12,8 @@ public class FlattenTask<TResult, TTask extends ITask<TResult>> extends Task<TRe
     }
 
     @Override
-    public void plan(IContinuation cont, IScheduler scheduler) {
-        task.plan(new Continuation(cont, this), scheduler);
+    public void execute(IContinuation cont, IScheduler scheduler) {
+        task.execute(new Continuation(cont, this), scheduler);
     }
 
     @Override
@@ -32,7 +32,7 @@ public class FlattenTask<TResult, TTask extends ITask<TResult>> extends Task<TRe
 
         @Override
         public void apply(IScheduler scheduler) {
-            task.task.getResult().plan(new SeqTask.Continuation(next, task), scheduler);
+            task.task.getResult().execute(new SeqTask.Continuation(next, task), scheduler);
         }
     }
 }

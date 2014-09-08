@@ -17,7 +17,7 @@ public class Func0Task<TResult> extends Task<TResult> {
     }
 
     @Override
-    public void plan(IContinuation cont, IScheduler scheduler) {
+    public void execute(IContinuation cont, IScheduler scheduler) {
         scheduler.schedule(this, cont);
     }
 }

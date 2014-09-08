@@ -5,6 +5,9 @@ package mi.task;
  *         2014-09-06 14:22
  */
 public interface IContinuation {
+    /**
+     * Continuation representing that nothing need to do.
+     */
     public static IContinuation END = new IContinuation() {
         @Override
         public void apply(IScheduler scheduler) {
@@ -12,5 +15,9 @@ public interface IContinuation {
         }
     };
 
+    /**
+     * Apply the continuation.
+     * @param scheduler
+     */
     public void apply(IScheduler scheduler);
 }

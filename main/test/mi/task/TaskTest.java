@@ -51,10 +51,10 @@ public class TaskTest {
             }
         }).continueWithWaiter();
 
-        waiter.schedule(new ExecutorScheduler(Executors.newSingleThreadExecutor()));
+        waiter.execute(new ExecutorScheduler(Executors.newSingleThreadExecutor()));
         System.out.println(waiter.getResult());
 
-        waiter.schedule(new SynchronizedScheduler());
+        waiter.execute(new SynchronizedScheduler());
         System.out.println(waiter.getResult());
     }
 
@@ -65,12 +65,12 @@ public class TaskTest {
     public ITask<Integer> addAsync(final int a, final int b) {
         return new Task<Integer>() {
             @Override
-            public void plan(IContinuation cont, IScheduler scheduler) {
+            public void execute(IContinuation cont, IScheduler scheduler) {
                 scheduler.schedule(this, cont);
             }
 
             @Override
-            public void execute(final IContinuation cont, final IScheduler scheduler) {
+            public void onExecute(final IContinuation cont, final IScheduler scheduler) {
                 addCallback(a, b, new Action1<Integer>() {
                     @Override
                     public void apply(Integer value) {

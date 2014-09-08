@@ -12,22 +12,34 @@ public abstract class Task<TResult> implements ITask<TResult> {
         return result;
     }
 
+    /**
+     * Set result of the task.
+     * @param result
+     */
     protected void setResult(TResult result) {
         this.result = result;
     }
 
     @Override
-    public void execute(IContinuation cont, IScheduler scheduler) {
+    public void onExecute(IContinuation cont, IScheduler scheduler) {
         result = evaluate();
         System.out.println("Evaluate complete: " + result);
 
         cont.apply(scheduler);
     }
 
-    public void schedule(IScheduler scheduler) {
-        plan(IContinuation.END, scheduler);
+    /**
+     * Execute the task without any continuation.
+     * @param scheduler
+     */
+    public void execute(IScheduler scheduler) {
+        execute(IContinuation.END, scheduler);
     }
 
+    /**
+     * Evaluate the task, and the returned value will be set as the result.
+     * @return
+     */
     protected abstract TResult evaluate();
 
     public <SResult> Task<SResult> continueWith(Func1<TResult, SResult> func) {

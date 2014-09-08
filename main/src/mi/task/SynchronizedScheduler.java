@@ -8,6 +8,6 @@ public class SynchronizedScheduler implements IScheduler {
     @Override
     public void schedule(ITask<?> task, IContinuation cont) {
         System.out.println("Run: " + task);
-        task.execute(cont, this);
+        task.onExecute(cont, this);
     }
 }
