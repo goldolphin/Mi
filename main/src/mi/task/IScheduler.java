@@ -6,9 +6,10 @@ package mi.task;
  */
 public interface IScheduler {
     /**
-     * Schedule and execute a task itself, i.e. invoke {@link ITask#onExecute(IContinuation, IScheduler)}.
+     * Schedule and execute a task itself, i.e. invoke {@link ITask#onExecute}.
      * @param task
-     * @param cont should be passed to {@link ITask#onExecute(IContinuation, IScheduler)} as a parameter.
+     * @param cont
+     * @param previous
      */
-    public void schedule(ITask<?> task, IContinuation cont);
+    public void schedule(ITask<?> task, IContinuation cont, ITask<?> previous);
 }

@@ -20,9 +20,10 @@ public interface ITask<TResult> {
     public void execute(IContinuation cont, IScheduler scheduler);
 
     /**
-     * Actions when the task is executed. Continuation should be applied usually.
+     * Action when the task is executed. Continuation should be applied usually.
      * @param cont
+     * @param previous
      * @param scheduler
      */
-    public void onExecute(IContinuation cont, IScheduler scheduler);
+    public void onExecute(IContinuation cont, ITask<?> previous, IScheduler scheduler);
 }

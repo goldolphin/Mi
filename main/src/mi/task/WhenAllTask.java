@@ -4,7 +4,7 @@ package mi.task;
  * @author goldolphin
  *         2014-09-06 18:27
  */
-public class WhenAllTask extends Task<WhenAllTask> {
+public class WhenAllTask extends Task<ITask<?>[]> {
     private final ITask<?>[] tasks;
 
     public WhenAllTask(ITask<?> ... tasks) {
@@ -16,16 +16,19 @@ public class WhenAllTask extends Task<WhenAllTask> {
     }
 
     @Override
-    protected WhenAllTask evaluate() {
-        return this;
-    }
-
-    @Override
     public void execute(IContinuation cont, IScheduler scheduler) {
         Continuation newCont = new Continuation(cont, this);
         for (ITask<?> task: tasks) {
             task.execute(newCont, scheduler);
         }
+    }
+
+    @Override
+    public void onExecute(IContinuation cont, ITask<?> previous, IScheduler scheduler) {
+        setResult(tasks);
+        System.out.println("Evaluate complete: " + getResult());
+
+        cont.apply(this, scheduler);
     }
 
     public static class Continuation implements IContinuation {
@@ -39,13 +42,13 @@ public class WhenAllTask extends Task<WhenAllTask> {
         }
 
         @Override
-        public void apply(IScheduler scheduler) {
+        public void apply(ITask<?> previous, IScheduler scheduler) {
             complete += 1;
             int total = task.getTasks().length;
             if (complete > total) {
                 throw new IllegalStateException("Invalid complete value: " + complete + " exceeds " + total);
             } else if (complete == total) {
-                scheduler.schedule(task, next);
+                task.onExecute(next, previous, scheduler);
             }
         }
     }

@@ -20,14 +20,6 @@ public abstract class Task<TResult> implements ITask<TResult> {
         this.result = result;
     }
 
-    @Override
-    public void onExecute(IContinuation cont, IScheduler scheduler) {
-        result = evaluate();
-        System.out.println("Evaluate complete: " + result);
-
-        cont.apply(scheduler);
-    }
-
     /**
      * Execute the task without any continuation.
      * @param scheduler
@@ -36,18 +28,12 @@ public abstract class Task<TResult> implements ITask<TResult> {
         execute(IContinuation.END, scheduler);
     }
 
-    /**
-     * Evaluate the task, and the returned value will be set as the result.
-     * @return
-     */
-    protected abstract TResult evaluate();
-
     public <SResult> Task<SResult> continueWith(Func1<TResult, SResult> func) {
-        return new Func1Task<TResult, SResult>(this, func);
+        return new Func1Task<TResult, TResult, SResult>(this, func, false);
     }
 
-    public <SResult> Task<SResult> continueWithAndFlatten(Func1<TResult, Task<SResult>> func) {
-        return flatten(continueWith(func));
+    public <T, SResult> Task<SResult> flattenAndContinueWith( Func1<T, SResult> func) {
+        return new Func1Task<T, TResult, SResult>(this, func, true);
     }
 
     public Waiter<TResult> continueWithWaiter() {
@@ -56,6 +42,10 @@ public abstract class Task<TResult> implements ITask<TResult> {
 
     public static <TResult> Task<TResult> fromFunc(Func0<TResult> func) {
         return new Func0Task<TResult>(func);
+    }
+
+    public static <TResult> Task<TResult> fromCallback(Action1<CallbackTask.Context<TResult>> action) {
+        return new CallbackTask<TResult>(action);
     }
 
     public static WhenAllTask continueWhenAll(ITask<?>... tasks) {

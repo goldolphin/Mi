@@ -9,7 +9,7 @@ public class Waiter<TResult> extends SeqTask<TResult, TResult> {
     private volatile boolean isComplete = false;
 
     public Waiter(ITask<TResult> antecedent) {
-        super(antecedent);
+        super(antecedent, false);
     }
 
     /**
@@ -39,17 +39,17 @@ public class Waiter<TResult> extends SeqTask<TResult, TResult> {
     }
 
     @Override
-    protected TResult evaluate() {
+    protected TResult evaluate(Object value) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void onExecute(IContinuation cont, IScheduler scheduler)  {
+    public void onExecute(IContinuation cont, ITask<?> previous, IScheduler scheduler)  {
         synchronized (lock) {
-            setResult(antecedent.getResult());
+            setResult((TResult) previous.getResult());
             isComplete = true;
             lock.notifyAll();
         }
-        cont.apply(scheduler);
+        cont.apply(this, scheduler);
     }
 }
