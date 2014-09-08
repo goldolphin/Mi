@@ -18,7 +18,7 @@ public class CallbackTask<TResult> extends Task<TResult> {
 
     @Override
     public void onExecute(final IContinuation cont, final ITask<?> previous, final IScheduler scheduler) {
-        Context<TResult> context = new Context<TResult>(this, cont, previous, scheduler);
+        Context<TResult> context = new Context<TResult>(this, cont, scheduler);
         action.apply(context);
     }
 
@@ -27,7 +27,7 @@ public class CallbackTask<TResult> extends Task<TResult> {
         private final IContinuation cont;
         private final IScheduler scheduler;
 
-        private Context(CallbackTask<TResult> task, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
+        private Context(CallbackTask<TResult> task, IContinuation cont, IScheduler scheduler) {
             this.task = task;
             this.cont = cont;
             this.scheduler = scheduler;
