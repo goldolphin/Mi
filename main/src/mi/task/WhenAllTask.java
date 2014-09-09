@@ -4,7 +4,7 @@ package mi.task;
  * @author goldolphin
  *         2014-09-06 18:27
  */
-public class WhenAllTask extends Task<ITask<?>[]> {
+public class WhenAllTask extends Task<Object[]> {
     private final ITask<?>[] tasks;
 
     public WhenAllTask(ITask<?> ... tasks) {
@@ -24,31 +24,43 @@ public class WhenAllTask extends Task<ITask<?>[]> {
     }
 
     @Override
-    public void onExecute(IContinuation cont, ITask<?> previous, IScheduler scheduler) {
-        setResult(tasks);
-        System.out.println("Evaluate complete: " + getResult());
+    public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
+        System.out.println("Evaluate complete: " + state);
 
-        cont.apply(this, scheduler);
+        cont.apply(state, this, scheduler);
     }
 
     public static class Continuation implements IContinuation {
         private final IContinuation next;
         private final WhenAllTask task;
+        private final Object[] results;
         private int complete = 0;
 
         public Continuation(IContinuation next, WhenAllTask task) {
             this.next = next;
             this.task = task;
+            results = new Object[task.tasks.length];
         }
 
         @Override
-        public void apply(ITask<?> previous, IScheduler scheduler) {
+        public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
             complete += 1;
-            int total = task.getTasks().length;
+            int total = task.tasks.length;
             if (complete > total) {
                 throw new IllegalStateException("Invalid complete value: " + complete + " exceeds " + total);
-            } else if (complete == total) {
-                task.onExecute(next, previous, scheduler);
+            }
+            setResult(state, previous);
+            if (complete == total) {
+                task.onExecute(results, next, previous, scheduler);
+            }
+        }
+
+        private void setResult(Object state, ITask<?> task) {
+            for (int i = 0; i < results.length; i ++) {
+                if (task == this.task.tasks[i]) {
+                    results[i] = state;
+                    break;
+                }
             }
         }
     }

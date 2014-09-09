@@ -5,21 +5,6 @@ package mi.task;
  *         2014-09-06 15:12
  */
 public abstract class Task<TResult> implements ITask<TResult> {
-    private TResult result = null;
-
-    @Override
-    public TResult getResult() {
-        return result;
-    }
-
-    /**
-     * Set result of the task.
-     * @param result
-     */
-    protected void setResult(TResult result) {
-        this.result = result;
-    }
-
     /**
      * Execute the task without any continuation.
      * @param scheduler

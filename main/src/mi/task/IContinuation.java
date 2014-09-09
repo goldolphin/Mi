@@ -10,15 +10,16 @@ public interface IContinuation {
      */
     public static IContinuation END = new IContinuation() {
         @Override
-        public void apply(ITask<?> previous, IScheduler scheduler) {
+        public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
             System.out.println("IContinuation.END");
         }
     };
 
     /**
      * Apply the continuation.
+     * @param state
      * @param previous
      * @param scheduler
      */
-    public void apply(ITask<?> previous, IScheduler scheduler);
+    public void apply(Object state, ITask<?> previous, IScheduler scheduler);
 }

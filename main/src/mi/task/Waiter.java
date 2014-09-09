@@ -7,6 +7,7 @@ package mi.task;
 public class Waiter<TResult> extends SeqTask<TResult, TResult> {
     private final Object lock = new Object();
     private volatile boolean isComplete = false;
+    private volatile TResult result;
 
     public Waiter(ITask<TResult> antecedent) {
         super(antecedent, false);
@@ -24,7 +25,6 @@ public class Waiter<TResult> extends SeqTask<TResult, TResult> {
      * Get the result in a blocking way.
      * @return
      */
-    @Override
     public TResult getResult() {
         synchronized (lock) {
             while (!isComplete) {
@@ -34,7 +34,7 @@ public class Waiter<TResult> extends SeqTask<TResult, TResult> {
                     throw new RuntimeException(e);
                 }
             }
-            return super.getResult();
+            return result;
         }
     }
 
@@ -44,12 +44,12 @@ public class Waiter<TResult> extends SeqTask<TResult, TResult> {
     }
 
     @Override
-    public void onExecute(IContinuation cont, ITask<?> previous, IScheduler scheduler)  {
+    public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler)  {
         synchronized (lock) {
-            setResult((TResult) previous.getResult());
+            result = (TResult) state;
             isComplete = true;
             lock.notifyAll();
         }
-        cont.apply(this, scheduler);
+        cont.apply(state, this, scheduler);
     }
 }

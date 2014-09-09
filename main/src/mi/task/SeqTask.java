@@ -21,11 +21,11 @@ public abstract class SeqTask<AResult, TResult> extends Task<TResult> {
     }
 
     @Override
-    public void onExecute(IContinuation cont, ITask<?> previous, IScheduler scheduler) {
-        setResult(evaluate(previous.getResult()));
-        System.out.println("Evaluate complete: " + getResult());
+    public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
+        TResult result = evaluate(state);
+        System.out.println("Evaluate complete: " + result);
 
-        cont.apply(this, scheduler);
+        cont.apply(result, this, scheduler);
     }
 
     /**
@@ -44,8 +44,8 @@ public abstract class SeqTask<AResult, TResult> extends Task<TResult> {
         }
 
         @Override
-        public void apply(ITask<?> previous, IScheduler scheduler) {
-            scheduler.schedule(task, next, previous);
+        public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
+            scheduler.schedule(task, state, next, previous);
         }
     }
 
@@ -55,12 +55,11 @@ public abstract class SeqTask<AResult, TResult> extends Task<TResult> {
         }
 
         @Override
-        public void apply(ITask<?> previous, IScheduler scheduler) {
-            Object result = previous.getResult();
-            if (result instanceof ITask<?>) {
-                ((ITask<?>) result).execute(this, scheduler);
+        public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
+            if (state instanceof ITask<?>) {
+                ((ITask<?>) state).execute(this, scheduler);
             } else {
-                scheduler.schedule(task, next, previous);
+                scheduler.schedule(task, state, next, previous);
             }
         }
     }

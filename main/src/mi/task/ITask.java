@@ -7,12 +7,6 @@ package mi.task;
  */
 public interface ITask<TResult> {
     /**
-     * Get result of the task.
-     * @return
-     */
-    public TResult getResult();
-
-    /**
      * Execute the task with specified continuation.
      * @param cont
      * @param scheduler
@@ -21,9 +15,10 @@ public interface ITask<TResult> {
 
     /**
      * Action when the task is executed. Continuation should be applied usually.
+     * @param state
      * @param cont
      * @param previous
      * @param scheduler
      */
-    public void onExecute(IContinuation cont, ITask<?> previous, IScheduler scheduler);
+    public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler);
 }

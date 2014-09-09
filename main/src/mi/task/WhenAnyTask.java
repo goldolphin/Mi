@@ -4,7 +4,7 @@ package mi.task;
  * @author goldolphin
  *         2014-09-06 21:27
  */
-public class WhenAnyTask extends Task<ITask<?>> {
+public class WhenAnyTask extends Task<WhenAnyTask.Result> {
     private final ITask<?>[] tasks;
 
     public WhenAnyTask(ITask<?> ... tasks) {
@@ -25,10 +25,10 @@ public class WhenAnyTask extends Task<ITask<?>> {
     }
 
     @Override
-    public void onExecute(IContinuation cont, ITask<?> previous, IScheduler scheduler) {
-        System.out.println("Evaluate complete: " + getResult());
+    public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
+        System.out.println("Evaluate complete: " + state);
 
-        cont.apply(this, scheduler);
+        cont.apply(state, this, scheduler);
     }
 
     public static class Continuation implements IContinuation {
@@ -42,14 +42,35 @@ public class WhenAnyTask extends Task<ITask<?>> {
         }
 
         @Override
-        public void apply(ITask<?> previous, IScheduler scheduler) {
+        public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
             complete += 1;
             int total = task.getTasks().length;
             if (complete > total) {
                 throw new IllegalStateException("Invalid complete value: " + complete + " exceeds " + total);
             } else if (complete == 1) {
-                task.onExecute(next, previous, scheduler);
+                task.onExecute(new Result(previous, state), next, previous, scheduler);
             }
+        }
+    }
+
+    /**
+     * Result of a WhenAnyTask
+     */
+    public static class Result {
+        public final ITask<?> task;
+        public final Object result;
+
+        public Result(ITask<?> task, Object result) {
+            this.task = task;
+            this.result = result;
+        }
+
+        @Override
+        public String toString() {
+            return "Result{" +
+                    "task=" + task +
+                    ", result=" + result +
+                    '}';
         }
     }
 }

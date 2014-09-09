@@ -13,11 +13,11 @@ public class CallbackTask<TResult> extends Task<TResult> {
 
     @Override
     public void execute(IContinuation cont, IScheduler scheduler) {
-        scheduler.schedule(this, cont, null);
+        scheduler.schedule(this, null, cont, null);
     }
 
     @Override
-    public void onExecute(final IContinuation cont, final ITask<?> previous, final IScheduler scheduler) {
+    public void onExecute(Object state, final IContinuation cont, final ITask<?> previous, final IScheduler scheduler) {
         Context<TResult> context = new Context<TResult>(this, cont, scheduler);
         action.apply(context);
     }
@@ -34,8 +34,7 @@ public class CallbackTask<TResult> extends Task<TResult> {
         }
 
         public void resume(TResult value) {
-            task.setResult(value);
-            cont.apply(task, scheduler);
+            cont.apply(value, task, scheduler);
         };
     }
 }

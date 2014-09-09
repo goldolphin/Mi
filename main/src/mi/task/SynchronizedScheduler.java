@@ -6,8 +6,8 @@ package mi.task;
  */
 public class SynchronizedScheduler implements IScheduler {
     @Override
-    public void schedule(ITask<?> task, IContinuation cont, ITask<?> previous) {
+    public void schedule(ITask<?> task, Object state, IContinuation cont, ITask<?> previous) {
         System.out.println("Run: " + task);
-        task.onExecute(cont, previous, this);
+        task.onExecute(state, cont, previous, this);
     }
 }

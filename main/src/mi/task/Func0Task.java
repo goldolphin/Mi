@@ -12,15 +12,15 @@ public class Func0Task<TResult> extends Task<TResult> {
     }
 
     @Override
-    public void onExecute(IContinuation cont, ITask<?> previous, IScheduler scheduler) {
-        setResult(func.apply());
-        System.out.println("Evaluate complete: " + getResult());
+    public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
+        TResult result = func.apply();
+        System.out.println("Evaluate complete: " + result);
 
-        cont.apply(this, scheduler);
+        cont.apply(result, this, scheduler);
     }
 
     @Override
     public void execute(IContinuation cont, IScheduler scheduler) {
-        scheduler.schedule(this, cont, null);
+        scheduler.schedule(this, null, cont, null);
     }
 }

@@ -95,10 +95,10 @@ public class TaskTest {
                 });
 
                 // Collect results of the 2 task2
-                return Task.continueWhenAll(task2, task3).continueWith(new Func1<ITask<?>[], Integer>() {
+                return Task.continueWhenAll(task2, task3).continueWith(new Func1<Object[], Integer>() {
                     @Override
-                    public Integer apply(ITask<?>[] value) {
-                        return task2.getResult() + task3.getResult();
+                    public Integer apply(Object[] value) {
+                        return (Integer)value[0] + (Integer)value[1];
                     }
                 });
             }

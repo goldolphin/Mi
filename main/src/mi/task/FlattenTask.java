@@ -28,13 +28,12 @@ public class FlattenTask<TResult, TTask extends ITask<TResult>> extends SeqTask<
         }
 
         @Override
-        public void apply(ITask<?> previous, IScheduler scheduler) {
-            Object result = previous.getResult();
+        public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
             if (!flattened) {
                 flattened = true;
-                ((ITask<?>) result).execute(this, scheduler);
+                ((ITask<?>) state).execute(this, scheduler);
             } else {
-                scheduler.schedule(task, next, previous);
+                scheduler.schedule(task, state, next, previous);
             }
         }
     }
