@@ -1,6 +1,7 @@
 package mi.task;
 
 /**
+ * A Continuation.
  * @author goldolphin
  *         2014-09-06 14:22
  */

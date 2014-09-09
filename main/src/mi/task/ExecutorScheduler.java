@@ -3,6 +3,7 @@ package mi.task;
 import java.util.concurrent.Executor;
 
 /**
+ * Scheduler based on {@link Executor}
  * @author goldolphin
  *         2014-09-05 22:52
  */

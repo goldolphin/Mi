@@ -1,6 +1,7 @@
 package mi.task;
 
 /**
+ * A task to wait the result of its antecedent.
  * @author goldolphin
  *         2014-09-06 18:05
  */

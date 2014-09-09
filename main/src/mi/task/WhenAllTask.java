@@ -1,6 +1,7 @@
 package mi.task;
 
 /**
+ * A task which will complete when all specified tasks complete.
  * @author goldolphin
  *         2014-09-06 18:27
  */
@@ -11,6 +12,10 @@ public class WhenAllTask extends Task<Object[]> {
         this.tasks = tasks;
     }
 
+    /**
+     * Get tasks to wait.
+     * @return
+     */
     public ITask<?>[] getTasks() {
         return tasks;
     }

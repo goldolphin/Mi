@@ -1,6 +1,7 @@
 package mi.task;
 
 /**
+ * Scheduler that execute tasks in local thread.
  * @author goldolphin
  *         2014-09-06 15:10
  */

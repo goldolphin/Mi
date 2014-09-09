@@ -1,6 +1,7 @@
 package mi.task;
 
 /**
+ * A task which will complete when any specified task complete.
  * @author goldolphin
  *         2014-09-06 21:27
  */
@@ -11,10 +12,13 @@ public class WhenAnyTask extends Task<WhenAnyTask.Result> {
         this.tasks = tasks;
     }
 
+    /**
+     * Get tasks to wait.
+     * @return
+     */
     public ITask<?>[] getTasks() {
         return tasks;
     }
-
 
     @Override
     public void execute(IContinuation cont, IScheduler scheduler) {

@@ -1,6 +1,7 @@
 package mi.task;
 
 /**
+ * A scheduler.
  * @author goldolphin
  *         2014-09-05 22:46
  */
