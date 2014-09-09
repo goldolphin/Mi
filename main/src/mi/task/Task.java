@@ -2,6 +2,7 @@ package mi.task;
 
 /**
  * Abstract base class that simplify usage of tasks.
+ * @param <TResult> result type.
  * @author goldolphin
  *         2014-09-06 15:12
  */

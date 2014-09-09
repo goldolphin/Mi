@@ -2,6 +2,7 @@ package mi.task;
 
 /**
  * A task.
+ * @param <TResult> result type.
  * @author goldolphin
  *         2014-09-05 22:46
  */

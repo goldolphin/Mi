@@ -2,6 +2,8 @@ package mi.task;
 
 /**
  * Function with 1 parameter.
+ * @param <T> parameter type.
+ * @param <TResult> result type.
  * @author goldolphin
  *         2014-09-05 22:47
  */

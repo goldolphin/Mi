@@ -2,6 +2,7 @@ package mi.task;
 
 /**
  * Action with 1 parameter.
+ * @param <T> parameter type.
  * @author goldolphin
  *         2014-09-08 12:01
  */
