@@ -43,9 +43,9 @@ public class TaskTest {
      * @return
      */
     public ITask<Integer> addAsync(final int a, final int b) {
-        return Task.fromCallback(new Action1<CallbackTask.Context<Integer>>() {
+        return Task.fromCallback(new Action1<Context<Integer>>() {
             @Override
-            public void apply(final CallbackTask.Context<Integer> context) {
+            public void apply(final Context<Integer> context) {
                 addCallback(a, b, new Action1<Integer>() {
                     @Override
                     public void apply(Integer value) {
@@ -98,7 +98,7 @@ public class TaskTest {
                 return Task.continueWhenAll(task2, task3).continueWith(new Func1<Object[], Integer>() {
                     @Override
                     public Integer apply(Object[] value) {
-                        return (Integer)value[0] + (Integer)value[1];
+                        return (Integer) value[0] + (Integer) value[1];
                     }
                 });
             }

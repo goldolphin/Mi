@@ -55,13 +55,13 @@ public abstract class Task<TResult> implements ITask<TResult> {
     }
 
     /**
-     * Create a task from a callback based async call. {@link CallbackTask.Context#resume} must be invoked in the
+     * Create a task from a callback based async call. {@link Context#resume} must be invoked in the
      * callback to resume following tasks.
      * @param action
      * @param <TResult>
      * @return
      */
-    public static <TResult> Task<TResult> fromCallback(Action1<CallbackTask.Context<TResult>> action) {
+    public static <TResult> Task<TResult> fromCallback(Action1<Context<TResult>> action) {
         return new CallbackTask<TResult>(action);
     }
 

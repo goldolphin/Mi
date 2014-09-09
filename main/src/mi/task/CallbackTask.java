@@ -21,20 +21,4 @@ public class CallbackTask<TResult> extends Task<TResult> {
         Context<TResult> context = new Context<TResult>(this, cont, scheduler);
         action.apply(context);
     }
-
-    public static class Context<TResult> {
-        private final CallbackTask<TResult> task;
-        private final IContinuation cont;
-        private final IScheduler scheduler;
-
-        private Context(CallbackTask<TResult> task, IContinuation cont, IScheduler scheduler) {
-            this.task = task;
-            this.cont = cont;
-            this.scheduler = scheduler;
-        }
-
-        public void resume(TResult value) {
-            cont.apply(value, task, scheduler);
-        };
-    }
 }
