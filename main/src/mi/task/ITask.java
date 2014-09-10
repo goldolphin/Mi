@@ -8,8 +8,8 @@ package mi.task;
  */
 public interface ITask<TResult> {
     /**
-     * Execute the task with specified continuation.
-     * @param state
+     * Execute the task with specified init state & continuation.
+     * @param state the init state of the task.
      * @param cont
      * @param scheduler
      */

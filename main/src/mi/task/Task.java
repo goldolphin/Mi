@@ -8,8 +8,8 @@ package mi.task;
  */
 public abstract class Task<TResult> implements ITask<TResult> {
     /**
-     * Execute the task without any continuation.
-     * @param state
+     * Execute the task with specified init state but no continuation.
+     * @param state the init state of the task.
      * @param scheduler
      */
     public void execute(Object state, IScheduler scheduler) {
@@ -23,7 +23,7 @@ public abstract class Task<TResult> implements ITask<TResult> {
      * @return
      */
     public <SResult> Task<SResult> continueWith(Func1<TResult, SResult> func) {
-        return new Func1Task<TResult, TResult, SResult>(this, func, false);
+        return new Func1SeqTask<TResult, TResult, SResult>(this, func, false);
     }
 
     /**
@@ -34,7 +34,7 @@ public abstract class Task<TResult> implements ITask<TResult> {
      * @return
      */
     public <T, SResult> Task<SResult> flattenAndContinueWith( Func1<T, SResult> func) {
-        return new Func1Task<T, TResult, SResult>(this, func, true);
+        return new Func1SeqTask<T, TResult, SResult>(this, func, true);
     }
 
     /**
@@ -53,6 +53,16 @@ public abstract class Task<TResult> implements ITask<TResult> {
      */
     public static <TResult> Task<TResult> fromFunc(Func0<TResult> func) {
         return new Func0Task<TResult>(func);
+    }
+
+    /**
+     * Create a task from a function.
+     * @param func
+     * @param <TResult>
+     * @return
+     */
+    public static <T, TResult> Task<TResult> fromFunc(Func1<T, TResult> func) {
+        return new Func1Task<T, TResult>(func);
     }
 
     /**

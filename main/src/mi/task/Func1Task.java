@@ -1,19 +1,26 @@
 package mi.task;
 
 /**
- * @author goldolphin
- *         2014-09-06 16:48
+ * @author caofuxiang
+ *         2014-09-10 10:43
  */
-public class Func1Task<T, AResult, TResult> extends SeqTask<AResult, TResult> {
+public class Func1Task<T, TResult> extends Task<TResult> {
     private final Func1<T, TResult> func;
 
-    public Func1Task(ITask<AResult> antecedent, Func1<T, TResult> func, boolean flatten) {
-        super(antecedent, flatten);
+    public Func1Task(Func1<T, TResult> func) {
         this.func = func;
     }
 
     @Override
-    public TResult evaluate(Object value) {
-        return func.apply((T) value);
+    public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
+        TResult result = func.apply((T) state);
+        System.out.println("Evaluate complete: " + result);
+
+        cont.apply(result, this, scheduler);
+    }
+
+    @Override
+    public void execute(Object state, IContinuation cont, IScheduler scheduler) {
+        scheduler.schedule(this, state, cont, null);
     }
 }
