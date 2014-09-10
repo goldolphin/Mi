@@ -73,8 +73,12 @@ public class TaskTest {
         // Serialize tasks.
         @Override
         public ITask<Integer> apply(Integer value) {
-            // Run an async function, and now we produce a nested task: ITask<ITask<Integer>>.
-            return addAsync(value, 1);
+            // A multi-branch dispatch.
+            if (value == 1) {
+                // Run an async function to produce a nested task: ITask<ITask<Integer>>.
+                return addAsync(value, 1);
+            }
+            return addAsync(value, 2);
         }
     }).flattenAndContinueWith(new Func1<Integer, Task<Integer>>() {
         // We must flatten the nested task(schedule the nested task) before we use the Integer.
