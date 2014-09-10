@@ -20,21 +20,16 @@ public class FlattenTask<TResult, TTask extends ITask<TResult>> extends SeqTask<
         return (TResult) value;
     }
 
-    public static class Continuation extends SeqTask.Continuation {
-        private boolean flattened = false;
+    public static class Continuation implements IContinuation {
+        private final IContinuation next;
 
         public Continuation(IContinuation next, ITask<?> task) {
-            super(next, task);
+            this.next = new SeqTask.Continuation(next, task);
         }
 
         @Override
         public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
-            if (!flattened) {
-                flattened = true;
-                ((ITask<?>) state).execute(null, this, scheduler);
-            } else {
-                scheduler.schedule(task, state, next, previous);
-            }
+            ((ITask<?>) state).execute(null, next, scheduler);
         }
     }
 }
