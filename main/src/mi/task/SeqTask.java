@@ -5,18 +5,19 @@ package mi.task;
  *         2014-09-06 15:38
  */
 public abstract class SeqTask<AResult, TResult> extends Task<TResult> {
-    protected final ITask<AResult> antecedent;
+    protected final ITask<AResult> parent;
     private final boolean flatten;
 
-    public SeqTask(ITask<AResult> antecedent, boolean flatten) {
-        this.antecedent = antecedent;
+    public SeqTask(ITask<AResult> parent, boolean flatten) {
+        this.parent = parent;
         this.flatten = flatten;
     }
 
     @Override
-    public void execute(Object state, IContinuation cont, IScheduler scheduler) {
-        antecedent.execute(state,
+    public void execute(Object state, IContinuation cont, ITask<?> antecedent, IScheduler scheduler) {
+        this.parent.execute(state,
                 flatten ? new FlattenContinuation(cont, this) : new Continuation(cont, this),
+                antecedent,
                 scheduler);
     }
 
@@ -34,21 +35,6 @@ public abstract class SeqTask<AResult, TResult> extends Task<TResult> {
      */
     protected abstract TResult evaluate(Object value);
 
-    public static class Continuation implements IContinuation {
-        protected final IContinuation next;
-        protected final ITask<?> task;
-
-        public Continuation(IContinuation next, ITask<?> task) {
-            this.next = next;
-            this.task = task;
-        }
-
-        @Override
-        public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
-            scheduler.schedule(task, state, next, previous);
-        }
-    }
-
     public static class FlattenContinuation extends Continuation {
         public FlattenContinuation(IContinuation next, ITask<?> task) {
             super(next, task);
@@ -57,7 +43,7 @@ public abstract class SeqTask<AResult, TResult> extends Task<TResult> {
         @Override
         public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
             if (state instanceof ITask<?>) {
-                ((ITask<?>) state).execute(null, this, scheduler);
+                ((ITask<?>) state).execute(null, this, BEGIN_TASK, scheduler);
             } else {
                 scheduler.schedule(task, state, next, previous);
             }

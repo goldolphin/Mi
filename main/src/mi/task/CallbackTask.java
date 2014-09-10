@@ -12,8 +12,8 @@ public class CallbackTask<TResult> extends Task<TResult> {
     }
 
     @Override
-    public void execute(Object state, IContinuation cont, IScheduler scheduler) {
-        scheduler.schedule(this, state, cont, null);
+    public void execute(Object state, IContinuation cont, ITask<?> antecedent, IScheduler scheduler) {
+        antecedent.execute(state, new Continuation(cont, this), BEGIN_TASK, scheduler);
     }
 
     @Override

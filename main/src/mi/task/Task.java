@@ -13,7 +13,7 @@ public abstract class Task<TResult> implements ITask<TResult> {
      * @param scheduler
      */
     public void execute(Object state, IScheduler scheduler) {
-        execute(state, IContinuation.END, scheduler);
+        execute(state, IContinuation.END_CONTINUATION, BEGIN_TASK, scheduler);
     }
 
     /**

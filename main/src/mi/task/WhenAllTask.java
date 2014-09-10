@@ -21,10 +21,10 @@ public class WhenAllTask extends Task<Object[]> {
     }
 
     @Override
-    public void execute(Object state, IContinuation cont, IScheduler scheduler) {
+    public void execute(Object state, IContinuation cont, ITask<?> antecedent, IScheduler scheduler) {
         Continuation newCont = new Continuation(cont, this);
         for (ITask<?> task: tasks) {
-            task.execute(state, newCont, scheduler);
+            task.execute(state, newCont, antecedent, scheduler);
         }
     }
 
