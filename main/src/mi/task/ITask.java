@@ -9,10 +9,11 @@ package mi.task;
 public interface ITask<TResult> {
     /**
      * Execute the task with specified continuation.
+     * @param state
      * @param cont
      * @param scheduler
      */
-    public void execute(IContinuation cont, IScheduler scheduler);
+    public void execute(Object state, IContinuation cont, IScheduler scheduler);
 
     /**
      * Action when the task is executed. Continuation should be applied usually.

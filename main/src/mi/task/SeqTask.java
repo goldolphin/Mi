@@ -14,8 +14,8 @@ public abstract class SeqTask<AResult, TResult> extends Task<TResult> {
     }
 
     @Override
-    public void execute(IContinuation cont, IScheduler scheduler) {
-        antecedent.execute(
+    public void execute(Object state, IContinuation cont, IScheduler scheduler) {
+        antecedent.execute(state,
                 flatten ? new FlattenContinuation(cont, this) : new Continuation(cont, this),
                 scheduler);
     }
@@ -57,7 +57,7 @@ public abstract class SeqTask<AResult, TResult> extends Task<TResult> {
         @Override
         public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
             if (state instanceof ITask<?>) {
-                ((ITask<?>) state).execute(this, scheduler);
+                ((ITask<?>) state).execute(null, this, scheduler);
             } else {
                 scheduler.schedule(task, state, next, previous);
             }

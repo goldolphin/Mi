@@ -11,8 +11,8 @@ public class FlattenTask<TResult, TTask extends ITask<TResult>> extends SeqTask<
     }
 
     @Override
-    public void execute(IContinuation cont, IScheduler scheduler) {
-        antecedent.execute(new Continuation(cont, this), scheduler);
+    public void execute(Object state, IContinuation cont, IScheduler scheduler) {
+        antecedent.execute(state, new Continuation(cont, this), scheduler);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class FlattenTask<TResult, TTask extends ITask<TResult>> extends SeqTask<
         public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
             if (!flattened) {
                 flattened = true;
-                ((ITask<?>) state).execute(this, scheduler);
+                ((ITask<?>) state).execute(null, this, scheduler);
             } else {
                 scheduler.schedule(task, state, next, previous);
             }

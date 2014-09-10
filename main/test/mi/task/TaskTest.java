@@ -12,12 +12,12 @@ public class TaskTest {
         // We use a Waiter to force main thread to wait the async task.
         // The Waiter is a friendly utility for testing.
         Waiter<Integer> waiter1 = testAsync().continueWithWaiter();
-        waiter1.execute(new SynchronizedScheduler());
+        waiter1.execute("1", new SynchronizedScheduler());
         System.out.println(waiter1.getResult());
 
         // Executed on a thread pool.
         Waiter<Integer> waiter2 = testAsync().continueWithWaiter();
-        waiter2.execute(new ExecutorScheduler(Executors.newSingleThreadExecutor()));
+        waiter2.execute("2", new ExecutorScheduler(Executors.newSingleThreadExecutor()));
         System.out.println(waiter2.getResult());
     }
 

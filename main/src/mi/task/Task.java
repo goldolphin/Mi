@@ -9,10 +9,11 @@ package mi.task;
 public abstract class Task<TResult> implements ITask<TResult> {
     /**
      * Execute the task without any continuation.
+     * @param state
      * @param scheduler
      */
-    public void execute(IScheduler scheduler) {
-        execute(IContinuation.END, scheduler);
+    public void execute(Object state, IScheduler scheduler) {
+        execute(state, IContinuation.END, scheduler);
     }
 
     /**
