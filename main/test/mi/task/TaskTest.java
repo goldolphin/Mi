@@ -7,7 +7,7 @@ import java.util.concurrent.Executors;
 public class TaskTest {
     @Test
     public void testTask() throws Exception {
-        // Executed on main thread.
+        // Executed in current thread.
         // We use a Waiter to force main thread to wait the async task.
         // The Waiter, which can be considered as a traditional java future, is a friendly utility for testing.
         // Don't use it in a pure async program, for it may block the execution.
@@ -15,7 +15,7 @@ public class TaskTest {
         waiter1.execute(new SynchronizedScheduler());
         System.out.println(waiter1.getResult());
 
-        // Executed on a thread pool.
+        // Executed in a thread pool.
         Waiter<Integer> waiter2 = testAsync(2).continueWithWaiter();
         waiter2.execute(new ExecutorScheduler(Executors.newSingleThreadExecutor()));
         System.out.println(waiter2.getResult());
