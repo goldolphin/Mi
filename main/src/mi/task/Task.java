@@ -33,8 +33,30 @@ public abstract class Task<TResult> implements ITask<TResult> {
      * @param <SResult>
      * @return
      */
-    public <T, SResult> Task<SResult> flattenAndContinueWith( Func1<T, SResult> func) {
+    public <T, SResult> Task<SResult> flattenAndContinueWith(Func1<T, SResult> func) {
         return new Func1SeqTask<T, TResult, SResult>(this, func, true);
+    }
+
+    /**
+     * After this task completes, continue to execute the specified action.
+     * {@link Context#resume} must be invoked to resume the control flow.
+     * @param action
+     * @param <SResult>
+     * @return
+     */
+    public <SResult> Task<SResult> continueWith(Action1<Context<TResult, SResult>> action) {
+        return new ContextSeqTask<TResult, SResult>(this, action, false);
+    }
+
+    /**
+     * After this task completes, flatten the result and continue to execute the specified function.
+     * {@link Context#resume} must be invoked to resume the control flow.
+     * @param action
+     * @param <SResult>
+     * @return
+     */
+    public <SResult> Task<SResult> flattenAndContinueWith(Action1<Context<TResult, SResult>> action) {
+        return new ContextSeqTask<TResult, SResult>(this, action, true);
     }
 
     /**
@@ -61,19 +83,19 @@ public abstract class Task<TResult> implements ITask<TResult> {
      * @param <TResult>
      * @return
      */
-    public static <T, TResult> Task<TResult> fromFunc(Func1<T, TResult> func) {
+    public static <T, TResult> Task<TResult> from(Func1<T, TResult> func) {
         return new Func1Task<T, TResult>(func);
     }
 
     /**
-     * Create a task from a callback based async call. {@link Context#resume} must be invoked in the
-     * callback to resume following tasks.
+     * Create a task from an action.
+     * {@link Context#resume} must be invoked to resume the control flow.
      * @param action
      * @param <TResult>
      * @return
      */
-    public static <TResult> Task<TResult> fromCallback(Action1<Context<TResult>> action) {
-        return new CallbackTask<TResult>(action);
+    public static <TResult> Task<TResult> from(Action1<Context<?, TResult>> action) {
+        return new ContextTask<TResult>(action);
     }
 
     /**

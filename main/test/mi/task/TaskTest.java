@@ -36,9 +36,9 @@ public class TaskTest {
      * @return
      */
     public static ITask<Integer> addAsync(final int a, final int b) {
-        return Task.fromCallback(new Action1<Context<Integer>>() {
+        return Task.from(new Action1<Context<?, Integer>>() {
             @Override
-            public void apply(final Context<Integer> context) {
+            public void apply(final Context<?, Integer> context) {
                 addCallback(a, b, new Action1<Integer>() {
                     @Override
                     public void apply(Integer value) {
@@ -63,11 +63,21 @@ public class TaskTest {
     }
 
     // The task is stateless, so we can build the task once and always reuse it.
-    private static final Task<Integer> testAsyncTask =  Task.fromFunc(new Func1<Integer, Integer>() {
+    private static final Task<Integer> testAsyncTask =  Task.from(new Func1<Integer, Integer>() {
         // Create a task from a normal function.
         @Override
         public Integer apply(Integer value) {
             return value;
+        }
+    }).continueWith(new Action1<Context<Integer, Integer>>() {
+        @Override
+        public void apply(final Context<Integer, Integer> context) {
+            addCallback(context.getState(), 1, new Action1<Integer>() {
+                @Override
+                public void apply(Integer value) {
+                    context.resume(value);
+                }
+            });
         }
     }).continueWith(new Func1<Integer, ITask<Integer>>() {
         // Serialize tasks.
