@@ -7,8 +7,8 @@ package mi.task;
 public class Func1SeqTask<T, AResult, TResult> extends SeqTask<AResult, TResult> {
     private final Func1<T, TResult> func;
 
-    public Func1SeqTask(ITask<AResult> parent, Func1<T, TResult> func, boolean flatten) {
-        super(parent, flatten);
+    public Func1SeqTask(ITask<AResult> antecedent, Func1<T, TResult> func, boolean flatten) {
+        super(antecedent, flatten);
         this.func = func;
     }
 

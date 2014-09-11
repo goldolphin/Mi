@@ -21,10 +21,10 @@ public class WhenAnyTask extends Task<WhenAnyTask.Result> {
     }
 
     @Override
-    public void execute(Object state, IContinuation cont, ITask<?> antecedent, IScheduler scheduler) {
+    public void execute(Object state, IContinuation cont, IScheduler scheduler) {
         Continuation newCont = new Continuation(cont, this);
         for (ITask<?> task: tasks) {
-            task.execute(state, newCont, antecedent, scheduler);
+            task.execute(state, newCont, scheduler);
         }
     }
 

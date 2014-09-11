@@ -1,7 +1,7 @@
 package mi.task;
 
 /**
- * A task to wait the result of its parent.
+ * A task to wait the result of its antecedent.
  * @param <TResult> result type.
  * @author goldolphin
  *         2014-09-06 18:05
@@ -11,8 +11,8 @@ public class Waiter<TResult> extends SeqTask<TResult, TResult> {
     private volatile boolean isComplete = false;
     private volatile TResult result;
 
-    public Waiter(ITask<TResult> parent) {
-        super(parent, false);
+    public Waiter(ITask<TResult> antecedent) {
+        super(antecedent, false);
     }
 
     /**
