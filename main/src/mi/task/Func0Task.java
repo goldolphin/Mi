@@ -13,10 +13,7 @@ public class Func0Task<TResult> extends Task<TResult> {
 
     @Override
     public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
-        TResult result = func.apply();
-        System.out.println("Evaluate complete: " + result);
-
-        cont.apply(result, this, scheduler);
+        cont.apply(func.apply(), this, scheduler);
     }
 
     @Override

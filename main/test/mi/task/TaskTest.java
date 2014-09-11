@@ -8,10 +8,17 @@ public class TaskTest {
     @Test
     public void testTask() throws Exception {
         // Executed on main thread.
-        System.out.println(testAsync(1, new SynchronizedScheduler()).getResult());
+        // We use a Waiter to force main thread to wait the async task.
+        // The Waiter, which can be considered as a traditional java future, is a friendly utility for testing.
+        // Don't use it in a pure async program, for it may block the execution.
+        Waiter<Integer> waiter1 = testAsync(1).continueWithWaiter();
+        waiter1.execute(new SynchronizedScheduler());
+        System.out.println(waiter1.getResult());
 
         // Executed on a thread pool.
-        System.out.println(testAsync(2, new ExecutorScheduler(Executors.newSingleThreadExecutor())).getResult());
+        Waiter<Integer> waiter2 = testAsync(2).continueWithWaiter();
+        waiter2.execute(new ExecutorScheduler(Executors.newSingleThreadExecutor()));
+        System.out.println(waiter2.getResult());
     }
 
     /**
@@ -35,35 +42,39 @@ public class TaskTest {
      * @param b
      * @return
      */
-    public static ITask<Integer> addAsync(final int a, final int b) {
-        return Task.from(new Action1<Context<?, Integer>>() {
-            @Override
-            public void apply(final Context<?, Integer> context) {
-                addCallback(a, b, new Action1<Integer>() {
-                    @Override
-                    public void apply(Integer value) {
-                        context.resume(value);
-                    }
-                });
-            }
-        });
+    public static ITask<Integer> addAsync(int a, int b) {
+        return addAsyncTask.initWithState(new int[]{a, b});
     }
+
+    /**
+     * This task is stateless, so we can build the task once and always reuse it.
+     * Most primitive tasks are stateless, but {@link Waiter} is stateful.
+     */
+    private static final Task<Integer> addAsyncTask = Task.from(new Action1<Context<int[], Integer>>() {
+        @Override
+        public void apply(final Context<int[], Integer> context) {
+            int a = context.getState()[0];
+            int b = context.getState()[1];
+            addCallback(a, b, new Action1<Integer>() {
+                @Override
+                public void apply(Integer value) {
+                    context.resume(value);
+                }
+            });
+        }
+    });
 
     /**
      * We combine several async actions to build a new one.
      * Don't Repeat Yourself when such action sequence must be reused.
-     * @return A waiter, you can consider it as a traditional java future. Don't use it in a pure async program.
+     * @return
      */
-    public Waiter<Integer> testAsync(int value, IScheduler scheduler) throws InterruptedException {
-        // We use a Waiter to force main thread to wait the async task.
-        // The Waiter is a friendly utility for testing.
-        Waiter<Integer> waiter = testAsyncTask.continueWithWaiter();
-        waiter.execute(value, scheduler);
-        return waiter;
+    public Task<Integer> testAsync(int value) {
+        return testAsyncTask.initWithState(value);
     }
 
-    // The task is stateless, so we can build the task once and always reuse it.
-    private static final Task<Integer> testAsyncTask =  Task.from(new Func1<Integer, Integer>() {
+    // This task is also stateless, so we can build the task once and always reuse it.
+    private static final Task<Integer> testAsyncTask = Task.from(new Func1<Integer, Integer>() {
         // Create a task from a normal function.
         @Override
         public Integer apply(Integer value) {

@@ -8,12 +8,11 @@ package mi.task;
  */
 public abstract class Task<TResult> implements ITask<TResult> {
     /**
-     * Execute the task with specified init state but no continuation.
-     * @param state the init state of the task.
+     * Execute the task without any continuation.
      * @param scheduler
      */
-    public void execute(Object state, IScheduler scheduler) {
-        execute(state, IContinuation.END, scheduler);
+    public void execute(IScheduler scheduler) {
+        execute(null, IContinuation.END_CONTINUATION, scheduler);
     }
 
     /**
@@ -68,6 +67,26 @@ public abstract class Task<TResult> implements ITask<TResult> {
     }
 
     /**
+     * Create a task to pass the specified initState to this task.
+     * @param initState
+     * @param <T>
+     * @return
+     */
+    public <T> Task<TResult> initWithState(T initState) {
+        return new InitTask<T, TResult>(initState, this);
+    }
+
+    /**
+     * Create a task to pass the specified initState to this task.
+     * @param initState
+     * @param <T>
+     * @return
+     */
+    public <T> Task<TResult> initWithState(T ... initState) {
+        return new InitTask<T[], TResult>(initState, this);
+    }
+
+    /**
      * Create a task from a function.
      * @param func
      * @param <TResult>
@@ -94,8 +113,8 @@ public abstract class Task<TResult> implements ITask<TResult> {
      * @param <TResult>
      * @return
      */
-    public static <TResult> Task<TResult> from(Action1<Context<?, TResult>> action) {
-        return new ContextTask<TResult>(action);
+    public static <T, TResult> Task<TResult> from(Action1<Context<T, TResult>> action) {
+        return new ContextTask<T, TResult>(action);
     }
 
     /**

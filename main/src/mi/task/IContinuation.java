@@ -9,10 +9,14 @@ public interface IContinuation {
     /**
      * Continuation representing that nothing need to do.
      */
-    public static IContinuation END = new IContinuation() {
+    public static IContinuation END_CONTINUATION = new IContinuation() {
         @Override
         public void apply(Object state, ITask<?> previous, IScheduler scheduler) {
-            System.out.println("IContinuation.END");
+        }
+
+        @Override
+        public String toString() {
+            return "END_CONTINUATION";
         }
     };
 

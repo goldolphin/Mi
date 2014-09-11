@@ -22,10 +22,7 @@ public abstract class SeqTask<AResult, TResult> extends Task<TResult> {
 
     @Override
     public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
-        TResult result = evaluate(state);
-        System.out.println("Evaluate complete: " + result);
-
-        cont.apply(result, this, scheduler);
+        cont.apply(evaluate(state), this, scheduler);
     }
 
     /**
