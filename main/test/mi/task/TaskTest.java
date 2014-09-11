@@ -95,14 +95,14 @@ public class TaskTest {
         @Override
         public Task<Integer> apply(final Integer value) {
             // Fan out 2 tasks.
-            final Task<Integer> task2 = Task.fromFunc(new Func0<Integer>() {
+            final Task<Integer> task2 = Task.from(new Func0<Integer>() {
                 @Override
                 public Integer apply() {
                     return value * 2;
                 }
             });
 
-            final Task<Integer> task3 = Task.fromFunc(new Func0<Integer>() {
+            final Task<Integer> task3 = Task.from(new Func0<Integer>() {
                 @Override
                 public Integer apply() {
                     return value * 3;

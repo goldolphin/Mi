@@ -30,9 +30,7 @@ public class WhenAllTask extends Task<Object[]> {
 
     @Override
     public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
-        System.out.println("Evaluate complete: " + state);
-
-        cont.apply(state, this, scheduler);
+        throw new UnsupportedOperationException();
     }
 
     public static class Continuation implements IContinuation {
@@ -56,7 +54,7 @@ public class WhenAllTask extends Task<Object[]> {
             }
             setResult(state, previous);
             if (complete == total) {
-                task.onExecute(results, next, previous, scheduler);
+                next.apply(results, task, scheduler);
             }
         }
 

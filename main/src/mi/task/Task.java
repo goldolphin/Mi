@@ -73,7 +73,7 @@ public abstract class Task<TResult> implements ITask<TResult> {
      * @param <TResult>
      * @return
      */
-    public static <TResult> Task<TResult> fromFunc(Func0<TResult> func) {
+    public static <TResult> Task<TResult> from(Func0<TResult> func) {
         return new Func0Task<TResult>(func);
     }
 

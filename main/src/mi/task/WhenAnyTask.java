@@ -30,9 +30,7 @@ public class WhenAnyTask extends Task<WhenAnyTask.Result> {
 
     @Override
     public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
-        System.out.println("Evaluate complete: " + state);
-
-        cont.apply(state, this, scheduler);
+        throw new UnsupportedOperationException();
     }
 
     public static class Continuation implements IContinuation {
@@ -52,7 +50,7 @@ public class WhenAnyTask extends Task<WhenAnyTask.Result> {
             if (complete > total) {
                 throw new IllegalStateException("Invalid complete value: " + complete + " exceeds " + total);
             } else if (complete == 1) {
-                task.onExecute(new Result(previous, state), next, previous, scheduler);
+                next.apply(new Result(previous, state), task, scheduler);
             }
         }
     }
