@@ -16,7 +16,6 @@ public class ExecutorScheduler extends SynchronizedScheduler {
 
     @Override
     public void schedule(final ITask<?> task, final Object state, final IContinuation cont, final ITask<?> previous) {
-        System.out.println("Schedule: " + task);
         executor.execute(new Runnable() {
             @Override
             public void run() {
