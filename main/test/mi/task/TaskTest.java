@@ -83,6 +83,7 @@ public class TaskTest {
     }).continueWith(new Action1<Context<Integer, Integer>>() {
         @Override
         public void apply(final Context<Integer, Integer> context) {
+            // Invoke callback based async function directly.
             addCallback(context.getState(), 1, new Action1<Integer>() {
                 @Override
                 public void apply(Integer value) {
