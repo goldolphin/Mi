@@ -118,6 +118,15 @@ public abstract class Task<TResult> implements ITask<TResult> {
     }
 
     /**
+     * Create a task which will complete depending on results of specified tasks.
+     * @param tasks
+     * @return
+     */
+    public static <TResult> CollectTask<TResult> continueWhen(Action1<Context<?, TResult>> action, ITask<?>... tasks) {
+        return new ContextCollectTask<TResult>(action, tasks);
+    }
+
+    /**
      * Create a task which will complete when all specified tasks complete.
      * @param tasks
      * @return

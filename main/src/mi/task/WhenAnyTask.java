@@ -5,32 +5,15 @@ package mi.task;
  * @author goldolphin
  *         2014-09-06 21:27
  */
-public class WhenAnyTask extends Task<WhenAnyTask.Result> {
-    private final ITask<?>[] tasks;
+public class WhenAnyTask extends CollectTask<WhenAnyTask.Result> {
 
     public WhenAnyTask(ITask<?> ... tasks) {
-        this.tasks = tasks;
-    }
-
-    /**
-     * Get tasks to wait.
-     * @return
-     */
-    public ITask<?>[] getTasks() {
-        return tasks;
+        super(tasks);
     }
 
     @Override
-    public void execute(Object state, IContinuation cont, IScheduler scheduler) {
-        Continuation newCont = new Continuation(cont, this);
-        for (ITask<?> task: tasks) {
-            task.execute(state, newCont, scheduler);
-        }
-    }
-
-    @Override
-    public void onExecute(Object state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
-        throw new UnsupportedOperationException();
+    protected IContinuation newContinuation(IContinuation cont) {
+        return new Continuation(cont, this);
     }
 
     public static class Continuation implements IContinuation {
@@ -50,7 +33,7 @@ public class WhenAnyTask extends Task<WhenAnyTask.Result> {
             if (complete > total) {
                 throw new IllegalStateException("Invalid complete value: " + complete + " exceeds " + total);
             } else if (complete == 1) {
-                next.apply(new Result(previous, state), task, scheduler);
+                next.apply(new Result(previous, state), previous, scheduler);
             }
         }
     }
