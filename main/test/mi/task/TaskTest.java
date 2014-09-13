@@ -81,6 +81,7 @@ public class TaskTest {
             return value;
         }
     }).continueWith(new Action1<Context<Integer, Integer>>() {
+        // Serialize tasks.
         @Override
         public void apply(final Context<Integer, Integer> context) {
             // Invoke callback based async function directly.
@@ -92,7 +93,6 @@ public class TaskTest {
             });
         }
     }).continueWith(new Func1<Integer, ITask<Integer>>() {
-        // Serialize tasks.
         @Override
         public ITask<Integer> apply(Integer value) {
             // A multi-branch dispatch.

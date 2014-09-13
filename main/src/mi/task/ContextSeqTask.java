@@ -14,7 +14,7 @@ public class ContextSeqTask<AResult, TResult> extends SeqTask<AResult, TResult> 
 
     @Override
     public void onExecute(Object state, final IContinuation cont, final ITask<?> previous, final IScheduler scheduler) {
-        Context<AResult, TResult> context = new Context<AResult, TResult>(this, (AResult) state, cont, scheduler);
+        Context<AResult, TResult> context = new Context<AResult, TResult>((AResult) state, cont, this, scheduler);
         action.apply(context);
     }
 

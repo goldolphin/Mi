@@ -6,20 +6,20 @@ package mi.task;
  * @param <TResult>
  */
 public class Context<AResult, TResult> {
-    private final ITask<TResult> task;
     private final AResult state;
     private final IContinuation cont;
+    private final ITask<?> previous;
     private final IScheduler scheduler;
 
     /**
      * Constructor.
-     * @param task
      * @param state
      * @param cont
+     * @param previous
      * @param scheduler
      */
-    Context(ITask<TResult> task, AResult state, IContinuation cont, IScheduler scheduler) {
-        this.task = task;
+    Context(AResult state, IContinuation cont, ITask<?> previous, IScheduler scheduler) {
+        this.previous = previous;
         this.state = state;
         this.cont = cont;
         this.scheduler = scheduler;
@@ -38,6 +38,14 @@ public class Context<AResult, TResult> {
      * @param newState
      */
     public void resume(TResult newState) {
-        cont.apply(newState, task, scheduler);
+        resume(newState, scheduler);
+    };
+
+    /**
+     * Resume the control flow with specified new state and scheduler.
+     * @param newState
+     */
+    public void resume(TResult newState, IScheduler scheduler) {
+        cont.apply(newState, previous, scheduler);
     };
 }

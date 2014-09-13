@@ -26,7 +26,7 @@ public abstract class Task<TResult> implements ITask<TResult> {
     }
 
     /**
-     * After this task completes, flatten the result and continue to execute the specified function.
+     * After this task completes, flatten the result recursively and continue to execute the specified function.
      * @param func
      * @param <T>
      * @param <SResult>
@@ -48,7 +48,7 @@ public abstract class Task<TResult> implements ITask<TResult> {
     }
 
     /**
-     * After this task completes, flatten the result and continue to execute the specified function.
+     * After this task completes, flatten the result recursively and continue to execute the specified function.
      * {@link Context#resume} must be invoked to resume the control flow.
      * @param action
      * @param <SResult>
@@ -136,13 +136,13 @@ public abstract class Task<TResult> implements ITask<TResult> {
     }
 
     /**
-     * Flatten the result of the specified task.
+     * Flatten the result of the specified task non-recursively.
      * @param task
      * @param <TResult>
      * @param <TTask>
      * @return
      */
-    public static <TResult, TTask extends ITask<TResult>> Task<TResult> flatten(ITask<TTask> task) {
+    public static <TResult, TTask extends ITask<TResult>> Task<TResult> flattenOnce(ITask<TTask> task) {
         return new FlattenTask<TResult, TTask>(task);
     }
 }
